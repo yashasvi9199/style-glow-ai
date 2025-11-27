@@ -1,0 +1,7 @@
+{
+  "name": "Style & Glow AI",
+  "description": "An AI-powered personal stylist and dermatologist that analyzes your photos for fashion, grooming, and pose advice, with optional AI editing capabilities.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
