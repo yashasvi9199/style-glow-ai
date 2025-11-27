@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { AnalysisResult, DetailedAnalysis } from '../types';
-import { Sparkles, Shirt, Sun, Layout, ChevronDown, ChevronUp, ScanFace, Camera } from 'lucide-react';
+import { Sparkles, Shirt, Sun, Layout, ChevronDown, ChevronUp, ScanFace, Camera, Smile, Palette, Leaf, Heart } from 'lucide-react';
 
 interface AnalysisViewProps {
   imageSrc: string;
@@ -10,7 +10,7 @@ interface AnalysisViewProps {
 }
 
 export const AnalysisView: React.FC<AnalysisViewProps> = ({ imageSrc, analysis, onRetake }) => {
-  const [activeTab, setActiveTab] = useState<'overview' | 'details' | 'recapture'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'details' | 'recapture' | 'facial' | 'emotional' | 'aesthetic' | 'wellness'>('overview');
 
   const categories = [
     {
@@ -43,14 +43,15 @@ export const AnalysisView: React.FC<AnalysisViewProps> = ({ imageSrc, analysis, 
     }
   ];
 
-  const DetailSection = ({ category }: { category: typeof categories[0] }) => {
-    const [isOpen, setIsOpen] = useState(true);
+  const [activeDetailId, setActiveDetailId] = useState<string | null>('face');
+
+  const DetailSection = ({ category, isOpen, onToggle }: { category: typeof categories[0], isOpen: boolean, onToggle: () => void }) => {
     const Icon = category.icon;
 
     return (
       <div className="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden mb-4">
         <button 
-          onClick={() => setIsOpen(!isOpen)}
+          onClick={onToggle}
           className="w-full flex items-center justify-between p-4 bg-slate-50/50 hover:bg-slate-50 transition-colors"
         >
           <div className="flex items-center gap-3">
@@ -63,7 +64,7 @@ export const AnalysisView: React.FC<AnalysisViewProps> = ({ imageSrc, analysis, 
         </button>
         
         {isOpen && (
-          <div className="p-4 space-y-4 border-t border-slate-100">
+          <div className="p-4 space-y-4 border-t border-slate-100 animate-in slide-in-from-top-2 duration-200">
             {category.keys.map((key) => (
               <div key={key} className="group">
                 <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">
@@ -86,8 +87,8 @@ export const AnalysisView: React.FC<AnalysisViewProps> = ({ imageSrc, analysis, 
   return (
     <div className="w-full max-w-2xl mx-auto pb-28">
       {/* Image Header */}
-      <div className="relative mb-6 rounded-2xl overflow-hidden shadow-lg border border-slate-100 bg-slate-100">
-        <img src={imageSrc} alt="User" className="w-full h-auto object-cover max-h-[500px]" />
+      <div className="relative mb-6 rounded-2xl overflow-hidden shadow-lg border border-slate-100 bg-slate-900 flex justify-center">
+        <img src={imageSrc} alt="User" className="w-full h-auto object-contain max-h-[400px]" />
         <div className="absolute top-4 left-4">
            <span className="px-3 py-1.5 bg-white/90 backdrop-blur rounded-full text-xs font-bold text-slate-800 shadow-sm border border-white/50">
              Analysis Complete
@@ -95,32 +96,29 @@ export const AnalysisView: React.FC<AnalysisViewProps> = ({ imageSrc, analysis, 
         </div>
       </div>
 
-      {/* Tabs */}
-      <div className="flex bg-slate-100 p-1 rounded-xl mb-6">
-        <button 
-          onClick={() => setActiveTab('overview')}
-          className={`flex-1 py-2.5 rounded-lg text-sm font-medium transition-all ${
-            activeTab === 'overview' ? 'bg-white shadow-sm text-indigo-900' : 'text-slate-500 hover:text-slate-700'
-          }`}
-        >
-          Executive Summary
-        </button>
-        <button 
-          onClick={() => setActiveTab('details')}
-          className={`flex-1 py-2.5 rounded-lg text-sm font-medium transition-all ${
-            activeTab === 'details' ? 'bg-white shadow-sm text-indigo-900' : 'text-slate-500 hover:text-slate-700'
-          }`}
-        >
-          Full Technical Report
-        </button>
-        <button 
-          onClick={() => setActiveTab('recapture')}
-          className={`flex-1 py-2.5 rounded-lg text-sm font-medium transition-all ${
-            activeTab === 'recapture' ? 'bg-white shadow-sm text-indigo-900' : 'text-slate-500 hover:text-slate-700'
-          }`}
-        >
-          Recapture Advice
-        </button>
+      {/* Tabs Grid */}
+      <div className="flex flex-wrap gap-2 mb-6">
+        {[
+          { id: 'overview', label: 'Summary' },
+          { id: 'details', label: 'Technical' },
+          { id: 'recapture', label: 'Recapture' },
+          { id: 'facial', label: 'Facial Features' },
+          { id: 'emotional', label: 'Emotional' },
+          { id: 'aesthetic', label: 'Aesthetic' },
+          { id: 'wellness', label: 'Skin Advisor' },
+        ].map((tab) => (
+          <button 
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id as any)}
+            className={`px-3 py-2.5 rounded-lg text-sm font-medium transition-all flex-grow text-center shadow-sm border ${
+              activeTab === tab.id 
+                ? 'bg-indigo-600 text-white border-indigo-600 shadow-md' 
+                : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'
+            }`}
+          >
+            {tab.label}
+          </button>
+        ))}
       </div>
 
       {activeTab === 'overview' && (
@@ -154,7 +152,12 @@ export const AnalysisView: React.FC<AnalysisViewProps> = ({ imageSrc, analysis, 
       {activeTab === 'details' && (
         <div className="space-y-2 animate-in fade-in slide-in-from-bottom-4 duration-500">
            {categories.map(cat => (
-             <DetailSection key={cat.id} category={cat} />
+             <DetailSection 
+               key={cat.id} 
+               category={cat} 
+               isOpen={activeDetailId === cat.id}
+               onToggle={() => setActiveDetailId(activeDetailId === cat.id ? null : cat.id)}
+             />
            ))}
         </div>
       )}
@@ -187,6 +190,94 @@ export const AnalysisView: React.FC<AnalysisViewProps> = ({ imageSrc, analysis, 
                  No specific recapture advice available for this image.
                </div>
             )}
+          </div>
+        </div>
+      )}
+
+      {activeTab === 'facial' && analysis.facialFeatures && (
+        <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
+          <div className="bg-rose-50 p-6 rounded-2xl border border-rose-100 mb-4">
+            <h2 className="text-lg font-bold text-rose-900 mb-2 flex items-center gap-2">
+              <ScanFace size={20} className="text-rose-600" />
+              Facial Feature Analysis
+            </h2>
+            <p className="text-rose-800/80 text-sm">
+              Non-medical analysis of skin texture and features.
+            </p>
+          </div>
+          <div className="grid gap-4">
+            {Object.entries(analysis.facialFeatures).map(([key, value]) => (
+              <div key={key} className="bg-white p-5 rounded-xl border border-slate-100 shadow-sm">
+                <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">{key}</h3>
+                <p className="text-slate-800 font-medium">{value}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {activeTab === 'emotional' && analysis.emotionalAnalysis && (
+        <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
+          <div className="bg-sky-50 p-6 rounded-2xl border border-sky-100 mb-4">
+            <h2 className="text-lg font-bold text-sky-900 mb-2 flex items-center gap-2">
+              <Smile size={20} className="text-sky-600" />
+              Emotional & Social Perception
+            </h2>
+            <p className="text-sky-800/80 text-sm">
+              How your expression and vibe are perceived by others.
+            </p>
+          </div>
+          <div className="grid gap-4 sm:grid-cols-2">
+            {Object.entries(analysis.emotionalAnalysis).map(([key, value]) => (
+              <div key={key} className="bg-white p-5 rounded-xl border border-slate-100 shadow-sm">
+                <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">{key.replace(/([A-Z])/g, ' $1').trim()}</h3>
+                <p className="text-slate-800 font-medium">{value}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {activeTab === 'aesthetic' && analysis.aestheticEnhancements && (
+        <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
+          <div className="bg-purple-50 p-6 rounded-2xl border border-purple-100 mb-4">
+            <h2 className="text-lg font-bold text-purple-900 mb-2 flex items-center gap-2">
+              <Palette size={20} className="text-purple-600" />
+              Aesthetic Enhancements
+            </h2>
+            <p className="text-purple-800/80 text-sm">
+              Personalized style and setting recommendations.
+            </p>
+          </div>
+          <div className="space-y-3">
+            {Object.entries(analysis.aestheticEnhancements).map(([key, value]) => (
+              <div key={key} className="bg-white p-5 rounded-xl border border-slate-100 shadow-sm">
+                <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">{key}</h3>
+                <p className="text-slate-800 font-medium">{value}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {activeTab === 'wellness' && analysis.skinWellness && (
+        <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
+          <div className="bg-emerald-50 p-6 rounded-2xl border border-emerald-100 mb-4">
+            <h2 className="text-lg font-bold text-emerald-900 mb-2 flex items-center gap-2">
+              <Leaf size={20} className="text-emerald-600" />
+              Skin Wellness Advisor
+            </h2>
+            <p className="text-emerald-800/80 text-sm">
+              Gentle, non-medical advice for healthy skin glow.
+            </p>
+          </div>
+          <div className="space-y-4">
+            {Object.entries(analysis.skinWellness).map(([key, value]) => (
+              <div key={key} className="bg-white p-5 rounded-xl border border-slate-100 shadow-sm">
+                <h3 className="text-xs font-bold text-emerald-600 uppercase tracking-wider mb-2">{key.replace(/([A-Z])/g, ' $1').trim()}</h3>
+                <p className="text-slate-700 leading-relaxed">{value}</p>
+              </div>
+            ))}
           </div>
         </div>
       )}

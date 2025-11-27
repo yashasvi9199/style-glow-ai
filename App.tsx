@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Camera } from './components/Camera';
 import { AnalysisView } from './components/AnalysisView';
-// import { EditView } from './components/EditView';
 import { analyzeImage } from './services/aiService';
 import { uploadToCloudinary } from './services/storageService';
 import { AppState, AnalysisResult, StorageConfig } from './types';

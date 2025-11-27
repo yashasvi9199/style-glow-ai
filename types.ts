@@ -43,11 +43,47 @@ export interface CategorySuggestions {
   expression: string[];
 }
 
+export interface FacialFeatureAnalysis {
+  texture: string;
+  forehead: string;
+  eyes: string;
+  cheeks: string;
+}
+
+export interface EmotionalSocialAnalysis {
+  expression: string;
+  confidence: string;
+  approachability: string;
+  perceivedMood: string;
+}
+
+export interface AestheticEnhancements {
+  lighting: string;
+  angles: string;
+  glasses: string;
+  hairstyles: string;
+  grooming: string; // Beard/No-beard
+}
+
+export interface SkinWellnessAdvisor {
+  observations: string;
+  lifestyleFactors: string;
+  homeCare: string;
+  naturalIngredients: string;
+  professionalRecommendation: string;
+}
+
 export interface AnalysisResult {
   summary: string;
   details: DetailedAnalysis;
   suggestions: CategorySuggestions; // Structured suggestions per category
   recaptureSuggestions: string[]; // Specific advice for retaking the photo
+  
+  // New Features
+  facialFeatures?: FacialFeatureAnalysis;
+  emotionalAnalysis?: EmotionalSocialAnalysis;
+  aestheticEnhancements?: AestheticEnhancements;
+  skinWellness?: SkinWellnessAdvisor;
 }
 
 

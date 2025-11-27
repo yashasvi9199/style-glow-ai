@@ -21,7 +21,7 @@ export const analyzeImage = async (
   onNotification?: NotificationCallback
 ): Promise<AnalysisResult> => {
   try {
-    console.log('Calling API:', API_URL);
+    // console.log('Calling API:', API_URL);
     
     const response = await fetch(API_URL, {
       method: 'POST',
@@ -31,7 +31,7 @@ export const analyzeImage = async (
       body: JSON.stringify({ image: base64Image }),
     });
 
-    console.log('Response status:', response.status);
+    // console.log('Response status:', response.status);
 
     if (!response.ok) {
       const errorText = await response.text();
@@ -40,7 +40,7 @@ export const analyzeImage = async (
     }
 
     const result: AnalysisResult = await response.json();
-    console.log('Analysis result received');
+    // console.log('Analysis result received:', JSON.stringify(result, null, 2));
     return result;
 
   } catch (error) {
@@ -73,7 +73,33 @@ export const analyzeImage = async (
         "Try finding better lighting",
         "Smile more naturally",
         "Check your background for clutter"
-      ]
+      ],
+      facialFeatures: {
+        texture: "Unavailable",
+        forehead: "Unavailable",
+        eyes: "Unavailable",
+        cheeks: "Unavailable"
+      },
+      emotionalAnalysis: {
+        expression: "Unavailable",
+        confidence: "Unavailable",
+        approachability: "Unavailable",
+        perceivedMood: "Unavailable"
+      },
+      aestheticEnhancements: {
+        lighting: "Unavailable",
+        angles: "Unavailable",
+        glasses: "Unavailable",
+        hairstyles: "Unavailable",
+        grooming: "Unavailable"
+      },
+      skinWellness: {
+        observations: "Unavailable",
+        lifestyleFactors: "Unavailable",
+        homeCare: "Unavailable",
+        naturalIngredients: "Unavailable",
+        professionalRecommendation: "Unavailable"
+      }
     };
   }
 };

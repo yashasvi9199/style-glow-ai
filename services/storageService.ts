@@ -22,15 +22,15 @@ export const uploadToCloudinary = async (base64Image: string, config: StorageCon
 
     if (!response.ok) {
       const errorData = await response.json();
-      console.error('Cloudinary upload failed:', errorData);
+      console.error('Image upload failed:', errorData);
       return null;
     }
 
     const data = await response.json();
-    console.log('Image uploaded securely to Cloudinary:', data.secure_url);
+    // console.log('Image uploaded securely to Cloudinary:', data.secure_url);
     return data.secure_url;
   } catch (error) {
-    console.error('Error uploading to Cloudinary:', error);
+    console.error('Error uploading to Image:', error);
     return null;
   }
 };
