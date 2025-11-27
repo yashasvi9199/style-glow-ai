@@ -1,8 +1,34 @@
-
 import { StorageConfig } from '../types';
 
-export const uploadToCloudinary = async (base64Image: string, config: StorageConfig): Promise<string | null> => {
-  if (!config.enabled || !config.cloudName || !config.uploadPreset) {
+// API Endpoint for config
+const CONFIG_API_URL = import.meta.env.VITE_API_URL?.replace('/analyze', '/config') || 'https://style-glow-api.vercel.app/api/config';
+
+interface CloudinaryConfig {
+  cloudName: string;
+  uploadPreset: string;
+}
+
+let cachedConfig: CloudinaryConfig | null = null;
+
+const getCloudinaryConfig = async (): Promise<CloudinaryConfig | null> => {
+  if (cachedConfig) return cachedConfig;
+
+  try {
+    const response = await fetch(CONFIG_API_URL);
+    if (!response.ok) throw new Error('Failed to fetch config');
+    cachedConfig = await response.json();
+    return cachedConfig;
+  } catch (error) {
+    console.error('Error fetching Cloudinary config:', error);
+    return null;
+  }
+};
+
+export const uploadToCloudinary = async (base64Image: string): Promise<string | null> => {
+  const config = await getCloudinaryConfig();
+  
+  if (!config || !config.cloudName || !config.uploadPreset) {
+    console.error('Cloudinary configuration missing');
     return null;
   }
 

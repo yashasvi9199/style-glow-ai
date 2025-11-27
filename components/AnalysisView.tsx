@@ -7,9 +7,10 @@ interface AnalysisViewProps {
   imageSrc: string;
   analysis: AnalysisResult;
   onRetake: () => void;
+  rateLimitRemaining: number;
 }
 
-export const AnalysisView: React.FC<AnalysisViewProps> = ({ imageSrc, analysis, onRetake }) => {
+export const AnalysisView: React.FC<AnalysisViewProps> = ({ imageSrc, analysis, onRetake, rateLimitRemaining }) => {
   const [activeTab, setActiveTab] = useState<'overview' | 'details' | 'recapture' | 'facial' | 'emotional' | 'aesthetic' | 'wellness'>('overview');
 
   const categories = [
@@ -283,10 +284,20 @@ export const AnalysisView: React.FC<AnalysisViewProps> = ({ imageSrc, analysis, 
       )}
 
       {/* Sticky Bottom Actions */}
-      <div className="fixed bottom-0 left-0 right-0 p-4 bg-white/90 backdrop-blur-lg border-t border-slate-200 flex justify-center gap-3 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] z-40">
+      <div className="fixed bottom-0 left-0 right-0 p-4 bg-white/90 backdrop-blur-lg border-t border-slate-200 flex flex-col items-center gap-3 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] z-40">
+        {rateLimitRemaining > 0 && (
+          <div className="text-xs text-amber-600 font-medium">
+            ⏱️ Wait {Math.ceil(rateLimitRemaining / 1000)}s to retake
+          </div>
+        )}
         <button 
           onClick={onRetake}
-          className="px-6 py-3 rounded-xl font-medium text-slate-600 bg-slate-100 hover:bg-slate-200 transition-colors flex-1 max-w-[140px]"
+          disabled={rateLimitRemaining > 0}
+          className={`px-6 py-3 rounded-xl font-medium transition-colors ${
+            rateLimitRemaining > 0
+              ? 'bg-slate-200 text-slate-400 cursor-not-allowed'
+              : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+          }`}
         >
           Retake
         </button>
@@ -295,7 +306,6 @@ export const AnalysisView: React.FC<AnalysisViewProps> = ({ imageSrc, analysis, 
           className="px-6 py-3 rounded-xl font-medium text-white bg-indigo-600 hover:bg-indigo-700 transition-colors flex-1 max-w-sm flex items-center justify-center gap-2 shadow-lg shadow-indigo-200"
         >
           <Sparkles size={18} />
-          Open Editor Studio
         </button> */}
       </div>
     </div>

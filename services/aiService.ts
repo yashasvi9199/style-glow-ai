@@ -20,7 +20,25 @@ export const analyzeImage = async (
   base64Image: string,
   onNotification?: NotificationCallback
 ): Promise<AnalysisResult> => {
+  // Client-side Rate Limiting (Spam Protection)
+  const RATE_LIMIT_WINDOW = 3 * 60 * 1000; // 3 minutes
+  const MAX_REQUESTS = 1;
+  
   try {
+    const history = JSON.parse(localStorage.getItem('analysis_history') || '[]');
+    const now = Date.now();
+    
+    // Filter out old requests
+    const recentRequests = history.filter((timestamp: number) => now - timestamp < RATE_LIMIT_WINDOW);
+    
+    if (recentRequests.length >= MAX_REQUESTS) {
+      const waitTime = Math.ceil((RATE_LIMIT_WINDOW - (now - recentRequests[0])) / 1000);
+      const minutes = Math.floor(waitTime / 60);
+      const seconds = waitTime % 60;
+      const timeStr = minutes > 0 ? `${minutes}m ${seconds}s` : `${seconds}s`;
+      throw new Error(`Please wait ${timeStr} before analyzing another image.`);
+    }
+
     // console.log('Calling API:', API_URL);
     
     const response = await fetch(API_URL, {
@@ -41,6 +59,11 @@ export const analyzeImage = async (
 
     const result: AnalysisResult = await response.json();
     // console.log('Analysis result received:', JSON.stringify(result, null, 2));
+    
+    // Update history on success
+    recentRequests.push(now);
+    localStorage.setItem('analysis_history', JSON.stringify(recentRequests));
+    
     return result;
 
   } catch (error) {
