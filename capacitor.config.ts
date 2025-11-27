@@ -1,8 +1,8 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'com.styleandglow.ai',
-  appName: 'Style & Glow AI',
+  appId: 'com.styleglow.ai',
+  appName: 'Style Glow AI',
   webDir: 'dist',
   plugins: {
     Android: {

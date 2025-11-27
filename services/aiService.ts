@@ -5,8 +5,8 @@
 
 import { AnalysisResult } from '../types';
 
-// API Endpoint (To be configured in Vercel)
-const API_URL = import.meta.env.VITE_API_URL || '/api/analyze';
+// API Endpoint - Vercel serverless function
+const API_URL = import.meta.env.VITE_API_URL || 'https://style-glow-api.vercel.app/api/analyze';
 
 /**
  * Callback type for user notifications
@@ -21,6 +21,8 @@ export const analyzeImage = async (
   onNotification?: NotificationCallback
 ): Promise<AnalysisResult> => {
   try {
+    console.log('Calling API:', API_URL);
+    
     const response = await fetch(API_URL, {
       method: 'POST',
       headers: {
@@ -29,11 +31,16 @@ export const analyzeImage = async (
       body: JSON.stringify({ image: base64Image }),
     });
 
+    console.log('Response status:', response.status);
+
     if (!response.ok) {
+      const errorText = await response.text();
+      console.error('API Error Response:', errorText);
       throw new Error(`API Error: ${response.statusText}`);
     }
 
     const result: AnalysisResult = await response.json();
+    console.log('Analysis result received');
     return result;
 
   } catch (error) {

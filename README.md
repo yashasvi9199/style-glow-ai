@@ -1,4 +1,4 @@
-# Style & Glow AI
+# Style Glow AI
 
 A React application for personalized style and grooming advice using AI.
 
