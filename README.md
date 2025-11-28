@@ -191,6 +191,15 @@ APK location: `android/app/build/outputs/apk/release/app-release.apk`
 adb install android/app/build/outputs/apk/release/app-release.apk
 ```
 
+### Debug logs
+```bash
+adb devices
+adb logcat -v threadtime > device-logs.txt
+# Or filter by your app packageID
+adb logcat --pid=$(adb shell pidof -s com.styleandglow.ai) -v threadtime > app-logs.txt
+
+```
+
 ## 🔧 Available Scripts
 
 ### Frontend (`style-glow-ai`)
