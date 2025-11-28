@@ -84,6 +84,11 @@ export interface AnalysisResult {
   emotionalAnalysis?: EmotionalSocialAnalysis;
   aestheticEnhancements?: AestheticEnhancements;
   skinWellness?: SkinWellnessAdvisor;
+  tokenUsage?: {
+    promptTokens: number;
+    responseTokens: number;
+    totalTokens: number;
+  };
 }
 
 

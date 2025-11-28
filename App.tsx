@@ -86,6 +86,12 @@ export default function App() {
 
     try {
       const result = await analyzeImage(src, handleNotification);
+      
+      // Log token usage if available
+      if (result.tokenUsage) {
+        console.log('Token Usage:', result.tokenUsage);
+      }
+
       setAnalysis(result);
       setAppState(AppState.RESULTS);
     } catch (error) {
