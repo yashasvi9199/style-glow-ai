@@ -22,6 +22,7 @@ export default function App() {
   // Storage Settings (Loaded from Environment)
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [pendingImageSrc, setPendingImageSrc] = useState<string | null>(null);
+  const [showRefreshWarning, setShowRefreshWarning] = useState(false);
 
   // Check rate limit on mount and update timer
   useEffect(() => {
@@ -32,10 +33,34 @@ export default function App() {
         const elapsed = Date.now() - lastRequest;
         const remaining = Math.max(0, 3 * 60 * 1000 - elapsed);
         setRateLimitRemaining(remaining);
+        
+        // Hide warning when timer reaches zero
+        if (remaining === 0 && showRefreshWarning) {
+          setShowRefreshWarning(false);
+        }
       } else {
         setRateLimitRemaining(0);
+        setShowRefreshWarning(false);
       }
     };
+
+    // Check if page was refreshed and rate limit is active
+    const wasRefreshed = sessionStorage.getItem('page_refreshed');
+    if (!wasRefreshed) {
+      sessionStorage.setItem('page_refreshed', 'true');
+    } else {
+      const history = JSON.parse(localStorage.getItem('analysis_history') || '[]');
+      if (history.length > 0) {
+        const lastRequest = history[history.length - 1];
+        const elapsed = Date.now() - lastRequest;
+        const remaining = Math.max(0, 3 * 60 * 1000 - elapsed);
+        
+        if (remaining > 0) {
+          setShowRefreshWarning(true);
+          setAppState(AppState.UPLOAD);
+        }
+      }
+    }
 
     checkRateLimit();
     const interval = setInterval(checkRateLimit, 1000);
@@ -148,6 +173,17 @@ export default function App() {
               <div className="mb-6 p-4 bg-amber-50 border border-amber-200 rounded-xl">
                 <p className="text-amber-800 text-sm font-medium">
                   ⏱️ Please wait {Math.ceil(rateLimitRemaining / 1000)}s before next analysis
+                </p>
+              </div>
+            )}
+
+            {showRefreshWarning && rateLimitRemaining > 0 && (
+              <div className="mb-6 p-4 bg-red-100 border border-red-200 rounded-xl flex items-center gap-3">
+                <div className="w-8 h-8 rounded-full bg-red-200 flex items-center justify-center flex-shrink-0">
+                  <X size={18} className="text-red-600" />
+                </div>
+                <p className="text-red-800 text-sm font-medium">
+                  You refreshed, but cannot upload yet. <br />Please wait for the timer to complete.
                 </p>
               </div>
             )}
