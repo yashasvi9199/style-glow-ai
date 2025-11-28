@@ -13,8 +13,8 @@
     "cap:add": "cap add android",
     "cap:sync": "cap sync",
     "cap:open": "cap open android",
-    "android-release": "npm run build && npx cap sync && cd android && ./gradlew assembleRelease",
-    "android-debug": "npm run build && npx cap sync && cd android && ./gradlew assembleDebug",
+    "android-release": "npm run build && npx cap sync && cd android && ./gradlew clean && ./gradlew assembleRelease --info",
+    "android-debug": "npm run build && npx cap sync && cd android && ./gradlew assembleDebug --info",
     "adb-install": "adb devices && cd android/app/build/outputs/apk/debug/ && adb install app-debug.apk"
   },
   "dependencies": {

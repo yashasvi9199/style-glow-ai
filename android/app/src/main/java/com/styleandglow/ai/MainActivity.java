@@ -10,8 +10,6 @@ public class MainActivity extends BridgeActivity {
         super.onCreate(savedInstanceState);
         
         // Enable WebView debugging for chrome://inspect
-        if (BuildConfig.DEBUG) {
-            WebView.setWebContentsDebuggingEnabled(true);
-        }
+        WebView.setWebContentsDebuggingEnabled(true);
     }
 }
