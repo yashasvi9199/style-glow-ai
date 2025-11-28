@@ -11,7 +11,7 @@ interface AnalysisViewProps {
 }
 
 export const AnalysisView: React.FC<AnalysisViewProps> = ({ imageSrc, analysis, onRetake, rateLimitRemaining }) => {
-  const [activeTab, setActiveTab] = useState<'overview' | 'details' | 'recapture' | 'facial' | 'emotional' | 'aesthetic' | 'wellness'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'details' | 'recapture' | 'emotional' | 'wellness'>('overview');
 
   const categories = [
     {
@@ -19,28 +19,21 @@ export const AnalysisView: React.FC<AnalysisViewProps> = ({ imageSrc, analysis, 
       title: 'Face & Expression',
       icon: ScanFace,
       color: 'text-rose-500',
-      keys: ['expressionAndPosture', 'eyes', 'facialShadowsAndTexture', 'lensDistortion', 'subjectClarity'] as (keyof DetailedAnalysis)[]
+      keys: ['expression', 'skin'] as (keyof DetailedAnalysis)[]
     },
     {
       id: 'style',
       title: 'Style & Grooming',
       icon: Shirt,
       color: 'text-indigo-500',
-      keys: ['clothingAndStyling', 'hairstyle', 'makeup', 'colorHarmony', 'moodConsistency', 'intent'] as (keyof DetailedAnalysis)[]
+      keys: ['clothing', 'hair'] as (keyof DetailedAnalysis)[]
     },
     {
-      id: 'tech',
-      title: 'Lighting & Technical',
-      icon: Sun,
-      color: 'text-amber-500',
-      keys: ['lightingQuality', 'skinTones', 'contrastAndTonalBalance', 'sharpness', 'noiseAndGrain'] as (keyof DetailedAnalysis)[]
-    },
-    {
-      id: 'comp',
-      title: 'Composition & Background',
+      id: 'scene',
+      title: 'Scene & Composition',
       icon: Layout,
       color: 'text-emerald-500',
-      keys: ['composition', 'backgroundQuality', 'croppingAndAspectRatio', 'detailHierarchy'] as (keyof DetailedAnalysis)[]
+      keys: ['lighting', 'background', 'pose', 'general'] as (keyof DetailedAnalysis)[]
     }
   ];
 
@@ -83,7 +76,7 @@ export const AnalysisView: React.FC<AnalysisViewProps> = ({ imageSrc, analysis, 
   };
 
   // Flatten top suggestions for summary
-  const topSuggestions = analysis.suggestions?.general || [];
+  const topSuggestions = analysis.suggestions || [];
 
   return (
     <div className="w-full max-w-2xl mx-auto pb-28">
@@ -101,11 +94,9 @@ export const AnalysisView: React.FC<AnalysisViewProps> = ({ imageSrc, analysis, 
       <div className="flex flex-wrap gap-2 mb-6">
         {[
           { id: 'overview', label: 'Summary' },
-          { id: 'details', label: 'Technical' },
+          { id: 'details', label: 'Analysis' },
           { id: 'recapture', label: 'Recapture' },
-          { id: 'facial', label: 'Facial Features' },
           { id: 'emotional', label: 'Emotional' },
-          { id: 'aesthetic', label: 'Aesthetic' },
           { id: 'wellness', label: 'Skin Advisor' },
         ].map((tab) => (
           <button 
@@ -195,28 +186,6 @@ export const AnalysisView: React.FC<AnalysisViewProps> = ({ imageSrc, analysis, 
         </div>
       )}
 
-      {activeTab === 'facial' && analysis.facialFeatures && (
-        <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
-          <div className="bg-rose-50 p-6 rounded-2xl border border-rose-100 mb-4">
-            <h2 className="text-lg font-bold text-rose-900 mb-2 flex items-center gap-2">
-              <ScanFace size={20} className="text-rose-600" />
-              Facial Feature Analysis
-            </h2>
-            <p className="text-rose-800/80 text-sm">
-              Non-medical analysis of skin texture and features.
-            </p>
-          </div>
-          <div className="grid gap-4">
-            {Object.entries(analysis.facialFeatures).map(([key, value]) => (
-              <div key={key} className="bg-white p-5 rounded-xl border border-slate-100 shadow-sm">
-                <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">{key}</h3>
-                <p className="text-slate-800 font-medium">{value}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
       {activeTab === 'emotional' && analysis.emotionalAnalysis && (
         <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
           <div className="bg-sky-50 p-6 rounded-2xl border border-sky-100 mb-4">
@@ -239,28 +208,6 @@ export const AnalysisView: React.FC<AnalysisViewProps> = ({ imageSrc, analysis, 
         </div>
       )}
 
-      {activeTab === 'aesthetic' && analysis.aestheticEnhancements && (
-        <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
-          <div className="bg-purple-50 p-6 rounded-2xl border border-purple-100 mb-4">
-            <h2 className="text-lg font-bold text-purple-900 mb-2 flex items-center gap-2">
-              <Palette size={20} className="text-purple-600" />
-              Aesthetic Enhancements
-            </h2>
-            <p className="text-purple-800/80 text-sm">
-              Personalized style and setting recommendations.
-            </p>
-          </div>
-          <div className="space-y-3">
-            {Object.entries(analysis.aestheticEnhancements).map(([key, value]) => (
-              <div key={key} className="bg-white p-5 rounded-xl border border-slate-100 shadow-sm">
-                <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">{key}</h3>
-                <p className="text-slate-800 font-medium">{value}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
       {activeTab === 'wellness' && analysis.skinWellness && (
         <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
           <div className="bg-emerald-50 p-6 rounded-2xl border border-emerald-100 mb-4">
@@ -272,14 +219,35 @@ export const AnalysisView: React.FC<AnalysisViewProps> = ({ imageSrc, analysis, 
               Gentle, non-medical advice for healthy skin glow.
             </p>
           </div>
-          <div className="space-y-4">
-            {Object.entries(analysis.skinWellness).map(([key, value]) => (
-              <div key={key} className="bg-white p-5 rounded-xl border border-slate-100 shadow-sm">
-                <h3 className="text-xs font-bold text-emerald-600 uppercase tracking-wider mb-2">{key.replace(/([A-Z])/g, ' $1').trim()}</h3>
-                <p className="text-slate-700 leading-relaxed">{value}</p>
-              </div>
-            ))}
+          <div className="space-y-3">
+            {Array.isArray(analysis.skinWellness) ? (
+              analysis.skinWellness.map((remedy, idx) => (
+                <div key={idx} className="bg-white p-4 rounded-xl border border-slate-100 shadow-sm flex flex-col gap-2">
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 rounded-full bg-emerald-400 flex-shrink-0" />
+                    <h3 className="font-semibold text-slate-800">{remedy.title}</h3>
+                  </div>
+                  <p className="text-slate-600 text-sm leading-relaxed pl-4">{remedy.description}</p>
+                  <div className="pl-4 mt-1">
+                    <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-md">
+                      Ingredients: {remedy.ingredients}
+                    </span>
+                  </div>
+                </div>
+              ))
+            ) : (
+               <p className="text-slate-500">Analysis format updated.</p>
+            )}
           </div>
+        </div>
+      )}
+      
+      {/* Disclaimer */}
+      {analysis.disclaimerText && (
+        <div className="mt-8 mb-4 px-4 py-3 bg-slate-50 rounded-lg border border-slate-100">
+          <p className="text-[10px] text-slate-400 text-center leading-tight">
+            {analysis.disclaimerText}
+          </p>
         </div>
       )}
 
@@ -301,12 +269,6 @@ export const AnalysisView: React.FC<AnalysisViewProps> = ({ imageSrc, analysis, 
         >
           Retake
         </button>
-        {/* <button 
-          onClick={onEdit}
-          className="px-6 py-3 rounded-xl font-medium text-white bg-indigo-600 hover:bg-indigo-700 transition-colors flex-1 max-w-sm flex items-center justify-center gap-2 shadow-lg shadow-indigo-200"
-        >
-          <Sparkles size={18} />
-        </button> */}
       </div>
     </div>
   );

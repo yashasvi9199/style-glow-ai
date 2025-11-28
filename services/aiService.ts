@@ -57,9 +57,34 @@ export const analyzeImage = async (
       throw new Error(`API Error: ${response.statusText}`);
     }
 
-    const result: AnalysisResult = await response.json();
-    // console.log('Analysis result received:', JSON.stringify(result, null, 2));
+    const rawResult = await response.json();
     
+    // Map short keys to readable interface
+    const result: AnalysisResult = {
+      summary: rawResult.s,
+      suggestions: rawResult.g,
+      details: {
+        general: rawResult.d.gen,
+        clothing: rawResult.d.clo,
+        pose: rawResult.d.pos,
+        background: rawResult.d.bkg,
+        hair: rawResult.d.har,
+        skin: rawResult.d.ski,
+        lighting: rawResult.d.lig,
+        expression: rawResult.d.exp
+      },
+      recaptureSuggestions: rawResult.r,
+      emotionalAnalysis: {
+        expression: rawResult.e.emo,
+        approachability: rawResult.e.app,
+        confidence: rawResult.e.conf,
+        perceivedMood: rawResult.e.mood
+      },
+      skinWellness: rawResult.w,
+      disclaimerText: "The content provided here is for informational and creative improvement purposes only and is not a substitute for professional medical advice, diagnosis, or treatment.",
+      tokenUsage: rawResult.tokenUsage
+    };
+
     // Update history on success
     recentRequests.push(now);
     localStorage.setItem('analysis_history', JSON.stringify(recentRequests));
@@ -79,50 +104,50 @@ export const analyzeImage = async (
     // Return fallback data
     return {
       summary: "AI analysis temporarily unavailable. Please try again.",
-      details: {} as any,
-      suggestions: {
-        general: ["Enhance lighting", "Fix contrast", "Smooth skin"],
-        clothing: ["Iron clothes", "Change color", "Add jacket"],
-        pose: ["Straighten back", "Smile more", "Turn head"],
-        background: ["Blur background", "Remove clutter", "Darken background"],
-        hair: ["Add volume", "Tame frizz", "Change style"],
-        skin: ["Remove shine", "Even tone", "Reduce redness"],
-        makeup: ["Natural look", "Pop of color", "Define eyes"],
-        lighting: ["Soften shadows", "Increase brightness", "Warm tone"],
-        accessories: ["Add glasses", "Wear necklace", "Add hat"],
-        expression: ["Softer smile", "Confident look", "Relax eyes"]
+      details: {
+        general: "Unavailable",
+        clothing: "Unavailable",
+        pose: "Unavailable",
+        background: "Unavailable",
+        hair: "Unavailable",
+        skin: "Unavailable",
+        lighting: "Unavailable",
+        expression: "Unavailable"
       },
+      suggestions: [
+        "Enhance lighting", 
+        "Fix contrast", 
+        "Smooth skin"
+      ],
       recaptureSuggestions: [
         "Try finding better lighting",
         "Smile more naturally",
         "Check your background for clutter"
       ],
-      facialFeatures: {
-        texture: "Unavailable",
-        forehead: "Unavailable",
-        eyes: "Unavailable",
-        cheeks: "Unavailable"
-      },
       emotionalAnalysis: {
         expression: "Unavailable",
         confidence: "Unavailable",
         approachability: "Unavailable",
         perceivedMood: "Unavailable"
       },
-      aestheticEnhancements: {
-        lighting: "Unavailable",
-        angles: "Unavailable",
-        glasses: "Unavailable",
-        hairstyles: "Unavailable",
-        grooming: "Unavailable"
-      },
-      skinWellness: {
-        observations: "Unavailable",
-        lifestyleFactors: "Unavailable",
-        homeCare: "Unavailable",
-        naturalIngredients: "Unavailable",
-        professionalRecommendation: "Unavailable"
-      }
+      skinWellness: [
+        {
+          title: "Hydration Boost",
+          description: "Drink more water and use a moisturizer.",
+          ingredients: "Water, Moisturizer"
+        },
+        {
+          title: "Sleep Well",
+          description: "Ensure you get 7-8 hours of sleep.",
+          ingredients: "Sleep"
+        },
+        {
+          title: "Sun Protection",
+          description: "Apply sunscreen daily.",
+          ingredients: "Sunscreen"
+        }
+      ],
+      disclaimerText: "The content provided here is for informational and creative improvement purposes only and is not a substitute for professional medical advice, diagnosis, or treatment."
     };
   }
 };

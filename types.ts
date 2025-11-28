@@ -5,49 +5,14 @@ export enum AppState {
 }
 
 export interface DetailedAnalysis {
-  // 18 Point Checklist
-  subjectClarity: string;
-  lightingQuality: string;
-  skinTones: string;
-  facialShadowsAndTexture: string;
-  eyes: string;
-  expressionAndPosture: string;
-  composition: string;
-  backgroundQuality: string;
-  colorHarmony: string;
-  contrastAndTonalBalance: string;
-  sharpness: string;
-  croppingAndAspectRatio: string;
-  clothingAndStyling: string;
-  moodConsistency: string;
-  noiseAndGrain: string;
-  detailHierarchy: string;
-  lensDistortion: string;
-  intent: string;
-  
-  // Specific extras
-  hairstyle: string;
-  makeup: string;
-}
-
-export interface CategorySuggestions {
-  general: string[];
-  clothing: string[];
-  pose: string[];
-  background: string[];
-  hair: string[];
-  skin: string[];
-  makeup: string[];
-  lighting: string[];
-  accessories: string[];
-  expression: string[];
-}
-
-export interface FacialFeatureAnalysis {
-  texture: string;
-  forehead: string;
-  eyes: string;
-  cheeks: string;
+  general: string;
+  clothing: string;
+  pose: string;
+  background: string;
+  hair: string;
+  skin: string;
+  lighting: string;
+  expression: string;
 }
 
 export interface EmotionalSocialAnalysis {
@@ -57,38 +22,27 @@ export interface EmotionalSocialAnalysis {
   perceivedMood: string;
 }
 
-export interface AestheticEnhancements {
-  lighting: string;
-  angles: string;
-  glasses: string;
-  hairstyles: string;
-  grooming: string; // Beard/No-beard
-}
-
-export interface SkinWellnessAdvisor {
-  observations: string;
-  lifestyleFactors: string;
-  homeCare: string;
-  naturalIngredients: string;
-  professionalRecommendation: string;
+export interface WellnessRemedy {
+  title: string;
+  description: string;
+  ingredients: string;
 }
 
 export interface AnalysisResult {
   summary: string;
   details: DetailedAnalysis;
-  suggestions: CategorySuggestions; // Structured suggestions per category
-  recaptureSuggestions: string[]; // Specific advice for retaking the photo
+  suggestions: string[]; // General suggestions (g)
+  recaptureSuggestions: string[]; // (r)
   
-  // New Features
-  facialFeatures?: FacialFeatureAnalysis;
-  emotionalAnalysis?: EmotionalSocialAnalysis;
-  aestheticEnhancements?: AestheticEnhancements;
-  skinWellness?: SkinWellnessAdvisor;
+  emotionalAnalysis?: EmotionalSocialAnalysis; // (e)
+  skinWellness?: WellnessRemedy[]; // (w)
+  
   tokenUsage?: {
     promptTokens: number;
     responseTokens: number;
     totalTokens: number;
   };
+  disclaimerText?: string; // (disc)
 }
 
 
