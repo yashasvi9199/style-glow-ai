@@ -12,70 +12,46 @@ interface AnalysisViewProps {
 
 export const AnalysisView: React.FC<AnalysisViewProps> = ({ imageSrc, analysis, onRetake, rateLimitRemaining }) => {
   const [activeTab, setActiveTab] = useState<'overview' | 'details' | 'recapture' | 'emotional' | 'wellness'>('overview');
+  const [expandedDetails, setExpandedDetails] = useState<string[]>(['general']);
+  const [expandedSuggestions, setExpandedSuggestions] = useState<number[]>([]);
 
-  const categories = [
-    {
-      id: 'face',
-      title: 'Face & Expression',
-      icon: ScanFace,
-      color: 'text-rose-500',
-      keys: ['expression', 'skin'] as (keyof DetailedAnalysis)[]
-    },
-    {
-      id: 'style',
-      title: 'Style & Grooming',
-      icon: Shirt,
-      color: 'text-indigo-500',
-      keys: ['clothing', 'hair'] as (keyof DetailedAnalysis)[]
-    },
-    {
-      id: 'scene',
-      title: 'Scene & Composition',
-      icon: Layout,
-      color: 'text-emerald-500',
-      keys: ['lighting', 'background', 'pose', 'general'] as (keyof DetailedAnalysis)[]
-    }
+  const detailItems = [
+    { key: 'general', label: 'General', icon: Sparkles, color: 'text-purple-600', bg: 'bg-purple-50' },
+    { key: 'clothing', label: 'Clothing', icon: Shirt, color: 'text-indigo-600', bg: 'bg-indigo-50' },
+    { key: 'pose', label: 'Pose', icon: Heart, color: 'text-pink-600', bg: 'bg-pink-50' },
+    { key: 'background', label: 'Background', icon: Layout, color: 'text-emerald-600', bg: 'bg-emerald-50' },
+    { key: 'hair', label: 'Hair', icon: Sparkles, color: 'text-amber-600', bg: 'bg-amber-50' },
+    { key: 'skin', label: 'Skin', icon: ScanFace, color: 'text-rose-600', bg: 'bg-rose-50' },
+    { key: 'lighting', label: 'Lighting', icon: Sun, color: 'text-yellow-600', bg: 'bg-yellow-50' },
+    { key: 'expression', label: 'Expression', icon: Smile, color: 'text-sky-600', bg: 'bg-sky-50' },
   ];
 
-  const [activeDetailId, setActiveDetailId] = useState<string | null>('face');
-
-  const DetailSection = ({ category, isOpen, onToggle }: { category: typeof categories[0], isOpen: boolean, onToggle: () => void }) => {
-    const Icon = category.icon;
-
-    return (
-      <div className="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden mb-4">
-        <button 
-          onClick={onToggle}
-          className="w-full flex items-center justify-between p-4 bg-slate-50/50 hover:bg-slate-50 transition-colors"
-        >
-          <div className="flex items-center gap-3">
-            <div className={`p-2 rounded-lg bg-white shadow-sm ${category.color}`}>
-              <Icon size={20} />
-            </div>
-            <h3 className="font-semibold text-slate-800">{category.title}</h3>
-          </div>
-          {isOpen ? <ChevronUp size={18} className="text-slate-400" /> : <ChevronDown size={18} className="text-slate-400" />}
-        </button>
-        
-        {isOpen && (
-          <div className="p-4 space-y-4 border-t border-slate-100 animate-in slide-in-from-top-2 duration-200">
-            {category.keys.map((key) => (
-              <div key={key} className="group">
-                <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">
-                  {key.replace(/([A-Z])/g, ' $1').trim()}
-                </h4>
-                <p className="text-slate-700 text-sm leading-relaxed">
-                  {analysis.details[key]}
-                </p>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
+  const toggleDetail = (key: string) => {
+    setExpandedDetails(prev => 
+      prev.includes(key) ? prev.filter(k => k !== key) : [...prev, key]
     );
   };
 
-  // Flatten top suggestions for summary
+  const toggleSuggestion = (idx: number) => {
+    setExpandedSuggestions(prev =>
+      prev.includes(idx) ? prev.filter(i => i !== idx) : [...prev, idx]
+    );
+  };
+
+  const parseSuggestion = (suggestion: string) => {
+    const parts = suggestion.split('=');
+    if (parts.length === 2) {
+      return {
+        observation: parts[0].trim(),
+        recommendation: parts[1].trim()
+      };
+    }
+    return {
+      observation: suggestion,
+      recommendation: null
+    };
+  };
+
   const topSuggestions = analysis.suggestions || [];
 
   return (
@@ -128,14 +104,38 @@ export const AnalysisView: React.FC<AnalysisViewProps> = ({ imageSrc, analysis, 
           <div>
             <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wide mb-3 px-1">Primary Recommendations</h3>
             <ul className="space-y-3">
-              {topSuggestions.slice(0, 5).map((suggestion, idx) => (
-                <li key={idx} className="flex gap-3 bg-white p-4 rounded-xl shadow-sm border border-slate-100">
-                  <span className="flex-shrink-0 w-6 h-6 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center font-bold text-xs">
-                    {idx + 1}
-                  </span>
-                  <span className="text-slate-700 text-sm font-medium">{suggestion}</span>
-                </li>
-              ))}
+              {topSuggestions.slice(0, 3).map((suggestion, idx) => {
+                const { observation, recommendation } = parseSuggestion(suggestion);
+                const isExpanded = expandedSuggestions.includes(idx);
+                
+                return (
+                  <li key={idx} className="bg-white p-4 rounded-xl shadow-sm border border-slate-100">
+                    <div className="flex gap-3 items-start">
+                      <span className="flex-shrink-0 w-6 h-6 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center font-bold text-xs">
+                        {idx + 1}
+                      </span>
+                      <div className="flex-1">
+                        <p className="text-slate-700 text-sm font-medium">{observation}</p>
+                        {recommendation && (
+                          <>
+                            {isExpanded && (
+                              <p className="text-indigo-600 text-sm mt-2 font-medium">
+                                → {recommendation}
+                              </p>
+                            )}
+                            <button
+                              onClick={() => toggleSuggestion(idx)}
+                              className="text-xs text-indigo-500 hover:text-indigo-700 mt-2 font-medium"
+                            >
+                              {isExpanded ? 'Hide recommendation' : 'Show recommendation'}
+                            </button>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  </li>
+                );
+              })}
             </ul>
           </div>
         </div>
@@ -143,14 +143,35 @@ export const AnalysisView: React.FC<AnalysisViewProps> = ({ imageSrc, analysis, 
 
       {activeTab === 'details' && (
         <div className="space-y-2 animate-in fade-in slide-in-from-bottom-4 duration-500">
-           {categories.map(cat => (
-             <DetailSection 
-               key={cat.id} 
-               category={cat} 
-               isOpen={activeDetailId === cat.id}
-               onToggle={() => setActiveDetailId(activeDetailId === cat.id ? null : cat.id)}
-             />
-           ))}
+          {detailItems.map(item => {
+            const Icon = item.icon;
+            const isExpanded = expandedDetails.includes(item.key);
+            
+            return (
+              <div key={item.key} className={`${item.bg} rounded-xl shadow-sm border border-slate-100 overflow-hidden`}>
+                <button 
+                  onClick={() => toggleDetail(item.key)}
+                  className="w-full flex items-center justify-between p-4 hover:bg-white/50 transition-colors"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className={`p-2 rounded-lg bg-white shadow-sm ${item.color}`}>
+                      <Icon size={20} />
+                    </div>
+                    <h3 className="font-semibold text-slate-800">{item.label}</h3>
+                  </div>
+                  {isExpanded ? <ChevronUp size={18} className="text-slate-400" /> : <ChevronDown size={18} className="text-slate-400" />}
+                </button>
+                
+                {isExpanded && (
+                  <div className="px-4 pb-4 animate-in slide-in-from-top-2 duration-200">
+                    <p className="text-slate-700 text-sm leading-relaxed">
+                      {analysis.details[item.key as keyof DetailedAnalysis]}
+                    </p>
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
       )}
 
