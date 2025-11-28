@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { AnalysisResult, DetailedAnalysis } from '../types';
-import { Sparkles, Shirt, Sun, Layout, ChevronDown, ChevronUp, ScanFace, Camera, Smile, Palette, Leaf, Heart } from 'lucide-react';
+import { Sparkles, Shirt, Heart, Layout, ScanFace, Sun, Smile, ChevronDown, ChevronUp, Camera, Leaf } from 'lucide-react';
 
 interface AnalysisViewProps {
   imageSrc: string;
@@ -16,14 +16,14 @@ export const AnalysisView: React.FC<AnalysisViewProps> = ({ imageSrc, analysis, 
   const [expandedSuggestions, setExpandedSuggestions] = useState<number[]>([]);
 
   const detailItems = [
-    { key: 'general', label: 'General', icon: Sparkles, color: 'text-purple-600', bg: 'bg-purple-50' },
-    { key: 'clothing', label: 'Clothing', icon: Shirt, color: 'text-indigo-600', bg: 'bg-indigo-50' },
-    { key: 'pose', label: 'Pose', icon: Heart, color: 'text-pink-600', bg: 'bg-pink-50' },
-    { key: 'background', label: 'Background', icon: Layout, color: 'text-emerald-600', bg: 'bg-emerald-50' },
-    { key: 'hair', label: 'Hair', icon: Sparkles, color: 'text-amber-600', bg: 'bg-amber-50' },
-    { key: 'skin', label: 'Skin', icon: ScanFace, color: 'text-rose-600', bg: 'bg-rose-50' },
-    { key: 'lighting', label: 'Lighting', icon: Sun, color: 'text-yellow-600', bg: 'bg-yellow-50' },
-    { key: 'expression', label: 'Expression', icon: Smile, color: 'text-sky-600', bg: 'bg-sky-50' },
+    { key: 'general', label: 'General', icon: Sparkles, color: 'text-slate-900', bg: 'bg-slate-50' },
+    { key: 'clothing', label: 'Clothing', icon: Shirt, color: 'text-slate-900', bg: 'bg-white' },
+    { key: 'pose', label: 'Pose', icon: Heart, color: 'text-slate-900', bg: 'bg-slate-50' },
+    { key: 'background', label: 'Background', icon: Layout, color: 'text-slate-900', bg: 'bg-white' },
+    { key: 'hair', label: 'Hair', icon: Sparkles, color: 'text-slate-900', bg: 'bg-slate-50' },
+    { key: 'skin', label: 'Skin', icon: ScanFace, color: 'text-slate-900', bg: 'bg-white'},
+    { key: 'lighting', label: 'Lighting', icon: Sun, color: 'text-slate-900', bg: 'bg-slate-50' },
+    { key: 'expression', label: 'Expression', icon: Smile, color: 'text-slate-900', bg: 'bg-white'  },
   ];
 
   const toggleDetail = (key: string) => {
