@@ -216,7 +216,7 @@ export const AnalysisView: React.FC<AnalysisViewProps> = ({ imageSrc, analysis, 
               Skin Wellness Advisor
             </h2>
             <p className="text-emerald-800/80 text-sm">
-              Gentle, non-medical advice for healthy skin glow.
+              Gentle, non-medical personalized advice for healthy skin glow.
             </p>
           </div>
           <div className="space-y-3">

