@@ -27,6 +27,9 @@ export default function App() {
     enabled: !!(import.meta.env.VITE_CLOUDINARY_CLOUD_NAME && import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET)
   });
 
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [pendingImageSrc, setPendingImageSrc] = useState<string | null>(null);
+
   // Check rate limit on mount and update timer
   useEffect(() => {
     const checkRateLimit = () => {
@@ -52,17 +55,42 @@ export default function App() {
       const reader = new FileReader();
       reader.onloadend = () => {
         const result = reader.result as string;
-        setImageSrc(result);
-        startAnalysis(result);
+        setPendingImageSrc(result);
+        setShowConfirmation(true);
       };
       reader.readAsDataURL(file);
     }
   };
 
   const handleCameraCapture = (capturedSrc: string) => {
-    setImageSrc(capturedSrc);
+    setPendingImageSrc(capturedSrc);
     setShowCamera(false);
-    startAnalysis(capturedSrc);
+    setShowConfirmation(true);
+  };
+
+  const handleConfirmAnalysis = () => {
+    if (pendingImageSrc) {
+      setImageSrc(pendingImageSrc);
+      startAnalysis(pendingImageSrc);
+      setShowConfirmation(false);
+      setPendingImageSrc(null);
+    }
+  };
+
+  const handleCancelAnalysis = () => {
+    if (pendingImageSrc && storageConfig.enabled) {
+      // Just upload to cloudinary without analysis
+      uploadToCloudinary(pendingImageSrc)
+        .then(url => {
+          if (url) console.log("Image uploaded to Cloudinary (Analysis Cancelled).");
+        })
+        .catch(err => console.error("Background upload failed", err));
+    }
+    
+    // Reset state
+    setShowConfirmation(false);
+    setPendingImageSrc(null);
+    setAppState(AppState.UPLOAD);
   };
 
   // Notification handler for AI service
@@ -231,6 +259,40 @@ export default function App() {
           >
             <X size={16} />
           </button>
+        </div>
+      )}
+
+      {/* Confirmation Modal */}
+      {showConfirmation && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6 transform scale-100 animate-in zoom-in-95 duration-200 border border-slate-100">
+            <div className="w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center mb-4 mx-auto">
+              <Wand2 className="text-indigo-600 w-6 h-6" />
+            </div>
+            
+            <h3 className="text-xl font-bold text-slate-900 text-center mb-2">
+              Are you sure you want to continue?
+            </h3>
+            
+            <p className="text-slate-600 text-center mb-6 leading-relaxed text-sm">
+              You will only be able to use AI features once every 3 minutes to prevent misuse.
+            </p>
+            
+            <div className="flex gap-3">
+              <button
+                onClick={handleCancelAnalysis}
+                className="flex-1 py-3 px-4 rounded-xl border border-slate-200 text-slate-600 font-medium hover:bg-slate-50 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleConfirmAnalysis}
+                className="flex-1 py-3 px-4 rounded-xl bg-indigo-600 text-white font-medium hover:bg-indigo-700 shadow-lg shadow-indigo-200 transition-all"
+              >
+                I Agree
+              </button>
+            </div>
+          </div>
         </div>
       )}
 
