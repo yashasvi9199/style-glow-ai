@@ -7,6 +7,10 @@ interface CloudinaryConfig {
   cloudName: string;
   uploadPreset: string;
   clientIp?: string;
+  anonID?: string;
+  userAgent?: string;
+  language?: string;
+  browserName?: string;
 }
 
 let cachedConfig: CloudinaryConfig | null = null;
@@ -40,11 +44,31 @@ export const uploadToCloudinary = async (base64Image: string): Promise<string | 
   formData.append('upload_preset', config.uploadPreset);
   // Add tags to organize images
   let tags = 'style_glow_ai_app';
+  let context = '';
+  
   if (config.clientIp) {
     tags += `,ip:${config.clientIp}`;
-    formData.append('context', `ip=${config.clientIp}`);
+    context += `ip=${config.clientIp}`;
   }
+  if (config.anonID) {
+    tags += `,anon:${config.anonID}`;
+    context += `|anonID=${config.anonID}`;
+  }
+  if (config.browserName) {
+    tags += `,browser:${config.browserName}`;
+    context += `|browser=${config.browserName}`;
+  }
+  if (config.language) {
+    context += `|lang=${config.language}`;
+  }
+  if (config.userAgent) {
+    context += `|ua=${config.userAgent}`;
+  }
+  
   formData.append('tags', tags);
+  if (context) {
+    formData.append('context', context);
+  }
 
   try {
     const response = await fetch(url, {
