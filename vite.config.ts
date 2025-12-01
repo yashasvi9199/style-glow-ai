@@ -9,7 +9,7 @@ export default defineConfig(({ mode }) => {
 
   return {
     plugins: [react()],
-    base: mode === 'production' && process.env.GITHUB_PAGES ? '/style-glow-ai/' : '/',
+    base: mode === 'production' ? '/style-glow-ai/' : '/',
     define: {
       // Polyfill process.env for the Gemini SDK and Cloudinary config
       'process.env.API_KEY': JSON.stringify(env.API_KEY),
