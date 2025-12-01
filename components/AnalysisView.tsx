@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { AnalysisResult, DetailedAnalysis } from '../types';
-import { Sparkles, Shirt, Heart, Layout, ScanFace, Sun, Smile, ChevronDown, ChevronUp, Camera, Leaf } from 'lucide-react';
+import { Sparkles, Shirt, Heart, Layout, ScanFace, Sun, Smile, Camera, Leaf, Baby } from 'lucide-react';
 
 interface AnalysisViewProps {
   imageSrc: string;
@@ -12,7 +12,6 @@ interface AnalysisViewProps {
 
 export const AnalysisView: React.FC<AnalysisViewProps> = ({ imageSrc, analysis, onRetake, rateLimitRemaining }) => {
   const [activeTab, setActiveTab] = useState<'overview' | 'details' | 'recapture' | 'emotional' | 'wellness'>('overview');
-  const [expandedDetails, setExpandedDetails] = useState<string[]>(['general']);
   const [expandedSuggestions, setExpandedSuggestions] = useState<number[]>([]);
 
   const detailItems = [
@@ -20,17 +19,11 @@ export const AnalysisView: React.FC<AnalysisViewProps> = ({ imageSrc, analysis, 
     { key: 'clothing', label: 'Clothing', icon: Shirt, color: 'text-slate-900', bg: 'bg-white' },
     { key: 'pose', label: 'Pose', icon: Heart, color: 'text-slate-900', bg: 'bg-slate-50' },
     { key: 'background', label: 'Background', icon: Layout, color: 'text-slate-900', bg: 'bg-white' },
-    { key: 'hair', label: 'Hair', icon: Sparkles, color: 'text-slate-900', bg: 'bg-slate-50' },
+    { key: 'hair', label: 'Hair', icon: Baby, color: 'text-slate-900', bg: 'bg-slate-50' },
     { key: 'skin', label: 'Skin', icon: ScanFace, color: 'text-slate-900', bg: 'bg-white'},
     { key: 'lighting', label: 'Lighting', icon: Sun, color: 'text-slate-900', bg: 'bg-slate-50' },
     { key: 'expression', label: 'Expression', icon: Smile, color: 'text-slate-900', bg: 'bg-white'  },
   ];
-
-  const toggleDetail = (key: string) => {
-    setExpandedDetails(prev => 
-      prev.includes(key) ? prev.filter(k => k !== key) : [...prev, key]
-    );
-  };
 
   const toggleSuggestion = (idx: number) => {
     setExpandedSuggestions(prev =>
@@ -142,36 +135,37 @@ export const AnalysisView: React.FC<AnalysisViewProps> = ({ imageSrc, analysis, 
       )}
 
       {activeTab === 'details' && (
-        <div className="space-y-2 animate-in fade-in slide-in-from-bottom-4 duration-500">
-          {detailItems.map(item => {
-            const Icon = item.icon;
-            const isExpanded = expandedDetails.includes(item.key);
-            
-            return (
-              <div key={item.key} className={`${item.bg} rounded-xl shadow-sm border border-slate-100 overflow-hidden`}>
-                <button 
-                  onClick={() => toggleDetail(item.key)}
-                  className="w-full flex items-center justify-between p-4 hover:bg-white/50 transition-colors"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className={`p-2 rounded-lg bg-white shadow-sm ${item.color}`}>
-                      <Icon size={20} />
+        <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
+          <div className="bg-indigo-50 p-6 rounded-2xl border border-indigo-100 mb-4">
+            <h2 className="text-lg font-bold text-indigo-900 mb-2 flex items-center gap-2">
+              <Sparkles size={20} className="text-indigo-600" />
+              Detailed Analysis
+            </h2>
+            <p className="text-indigo-800/80 text-sm">
+              Comprehensive breakdown of your style, grooming, and presentation.
+            </p>
+          </div>
+          
+          <div className="grid gap-4 sm:grid-cols-2">
+            {detailItems.map(item => {
+              const Icon = item.icon;
+              
+              return (
+                <div key={item.key} className="bg-white p-5 rounded-xl border border-slate-100 shadow-sm flex flex-col gap-3 h-full">
+                  <div className="flex items-center gap-2 mb-1">
+                    <div className={`p-1.5 rounded-lg bg-slate-50 text-slate-600`}>
+                      <Icon size={16} />
                     </div>
-                    <h3 className="font-semibold text-slate-800">{item.label}</h3>
+                    <h3 className="font-bold text-slate-700 text-sm uppercase tracking-wide">{item.label}</h3>
                   </div>
-                  {isExpanded ? <ChevronUp size={18} className="text-slate-400" /> : <ChevronDown size={18} className="text-slate-400" />}
-                </button>
-                
-                {isExpanded && (
-                  <div className="px-4 pb-4 animate-in slide-in-from-top-2 duration-200">
-                    <p className="text-slate-700 text-sm leading-relaxed">
-                      {analysis.details[item.key as keyof DetailedAnalysis]}
-                    </p>
-                  </div>
-                )}
-              </div>
-            );
-          })}
+                  
+                  <p className="text-slate-800 font-medium text-sm leading-relaxed">
+                    {analysis.details[item.key as keyof DetailedAnalysis]}
+                  </p>
+                </div>
+              );
+            })}
+          </div>
         </div>
       )}
 
