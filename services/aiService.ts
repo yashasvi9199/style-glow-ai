@@ -53,47 +53,77 @@ export const analyzeImage = async (
     const compressedSize = getBase64Size(compressedImage);
     console.log(`[AI Service] Compressed to: ${compressedSize.toFixed(2)} KB (${((1 - compressedSize/originalSize) * 100).toFixed(1)}% reduction)`);
     
-    const prompt = `You are an expert fashion photographer, stylist, and wellness advisor. Analyze this image and return STRICT JSON only (no markdown, no preamble).
+    const prompt = `Analyze the image as a photographer, stylist, lighting expert, expression analyst, and skin wellness advisor. 
+      Return STRICT JSON ONLY matching this structure (no text outside JSON):
 
-STYLE RULES:
-• Write 1-2 concise sentences per field (4-12 words each)
-• Be specific, actionable, technical - avoid vague terms like "nice" or "good"
-• No repetition between fields
+      {
+        "s": "",
+        "g": ["","",""],
+        "d": { "gen":"", "clo":"", "pos":"", "bkg":"", "har":"", "ski":"", "lig":"", "exp":"" },
+        "r": ["","","","",""],
+        "e": { "emo":"", "app":"", "conf":"", "mood":"" },
+        "w": [
+          {"title":"","description":"","ingredients":""},
+          {"title":"","description":"","ingredients":""},
+          {"title":"","description":"","ingredients":""},
+          {"title":"","description":"","ingredients":""}
+        ]
+      }
 
-JSON STRUCTURE:
-{
-  "s": "Summary - Brief positive analysis combining top 2-3 visual aspects (1 sentence, ~20 words)",
-  "g": ["Suggestion 1", "Suggestion 2", "Suggestion 3"] - Format as "Observation = Action" (e.g., "Under-eye shadows = Soften with diffused light"),
-  "d": {
-    "gen": "General - Overall composition & framing insights",
-    "clo": "Clothing - Style, fit, color, coordination analysis",
-    "pos": "Pose - Body positioning, angles, posture assessment",
-    "bkg": "Background - Setting, clutter, depth, context review",
-    "har": "Hair - Style, grooming, texture, color evaluation",
-    "ski": "Skin - Tone analysis, visible care needs (non-diagnostic)",
-    "lig": "Lighting - Direction, quality, shadows, highlights critique",
-    "exp": "Expression - Facial emotion, eye contact, authenticity"
-  },
-  "r": ["Tip 1", "Tip 2", ...] - 5-7 beginner-friendly recapture instructions. Use short imperatives (e.g., "Hold camera slightly higher", "Step back from wall"),
-  "e": {
-    "emo": "Expression - Emotional reading as face analyst",
-    "app": "Approachability - Social warmth perception",
-    "conf": "low" | "medium" | "high" - Confidence assessment,
-    "mood": "Mood - Perceived emotional state"
-  },
-  "w": [
-    {"title": "Issue Name (e.g., Acne, Dark Circles, Dryness)", "description": "Specific natural remedy instruction", "ingredients": "List of ingredients used"},
-    ... 4 remedies based on VISIBLE SKIN ISSUES detected in the image.
-    
-    STRICT RULES:
-    1. **DIAGNOSE & PRESCRIBE**: Identify 4 distinct skin needs/issues from the image (e.g., dullness, acne, tanning, dark circles, pores, dryness).
-    2. **TITLE FORMAT**: The 'title' MUST be the name of the skin issue (e.g., "Acne Control", "Dark Circle Relief", "Glow Boost", "Tan Removal").
-    3. **SKIN CARE ONLY**: Do NOT suggest remedies for hair, digestion, or general health.
-    4. **VARIETY**: Use diverse Indian/Ayurvedic ingredients. Avoid repeating the same ingredients across remedies.
-  ]
-}
+      ================ SUMMARY ================
+      "s": One polished ~20-word sentence highlighting the strongest visible qualities (composition, lighting, pose, expression). 
+      Must be positive but technical, not flattering.
 
-Provide rich, insightful content in each field while keeping sentences short and actionable.`;
+      ================ GENERAL SUGGESTIONS ================
+      "g": Exactly 3 items, each formatted as "Observation = Action". 
+      Short (6–12 words), technical, image-specific (e.g., “Flat cheek shadows = raise fill light slightly.”).
+      No repetition.
+
+      ================ DETAILED ANALYSIS ================
+      Each "d.*" = one clear 10–16 word sentence with a specific improvement point, no reused ideas.
+      • gen: overall compositional balance, framing, or proportional clarity.
+      • clo: clothing fit, color harmony, and visual coherence with scene.
+      • pos: posture, shoulder angle, head tilt, silhouette strength.
+      • bkg: background separation, clutter, depth, subject-to-background contrast.
+      • har: hair texture, grooming, flyaways, shape framing the face.
+      • ski: visible tone, texture, marks, or unevenness (non-medical).
+      • lig: lighting direction, highlight/shadow placement, exposure accuracy.
+      • exp: expression clarity, micro-smile cues, authenticity, eye engagement.
+
+      ================ RECAPTURE ================
+      "r": Provide 5–7 simple beginner-friendly commands (6-14 words).
+      Direct physical guidance only (no jargon). 
+      Examples of tone: 
+      “Raise camera slightly for cleaner jawline.” 
+      “Turn shoulders softly for contour.” 
+      “Step forward to reduce background overlap.” 
+      “Lean in slightly for stronger presence.”
+
+      ================ EMOTION & SOCIAL ================
+      Each field = one vivid 8–15 word sentence using ONLY visible cues (eyes, brows, mouth tension, posture).
+      • emo: emotional tone inferred from micro-expressions and facial energy.
+      • app: approachability based on warmth signals, gaze direction, facial softness.
+      • conf: must include “low”, “medium”, or “high” and a brief visible justification in 1 line.
+      • mood: overall emotional atmosphere combining expression, posture, and visual energy.
+      No single-word answers; no psychological diagnosis.
+
+      ================ WELLNESS (4 Remedies) ================
+      "w": Exactly 4 remedies for clearly visible facial skin issues only.
+      Allowed: acne, pimples, post-acne marks, dark circles, tanning, hyperpigmentation, redness, pores, dryness, uneven tone, mild dullness.
+      If ambiguous due to lighting, use “Possible <Issue>”.
+
+      For each remedy:
+      • title: literal issue name (no creative names).
+      • description: 2–3 lines with purpose + method + frequency. Must be topical, safe, practical, and Indian/Ayurvedic friendly.
+      • ingredients: comma-separated STRING of topical items.
+      • No ingredient repetition across remedies.
+      • Severe cases → description: “Visible severe issue — advise medical consultation.” and ingredients = "".
+
+      ================ OUTPUT RULES ================
+      • Output MUST be valid JSON matching the structure.  
+      • No markdown, no comments, no extra text.
+      • Every sentence must be image-grounded, concise, and specific.
+    `;
     
     // API call with timeout protection
     const apiPromise = fetch(API_URL, {
