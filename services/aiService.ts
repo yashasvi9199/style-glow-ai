@@ -53,45 +53,6 @@ export const analyzeImage = async (
     const compressedSize = getBase64Size(compressedImage);
     console.log(`[AI Service] Compressed to: ${compressedSize.toFixed(2)} KB (${((1 - compressedSize/originalSize) * 100).toFixed(1)}% reduction)`);
     
-    // Define 6 distinct SKIN-FOCUSED categories to ensure variety
-    const categories = [
-      {
-        name: "GLOW & RADIANCE (Ayurvedic)",
-        ingredients: "turmeric (haldi), saffron (kesar), sandalwood (chandan), raw milk, rose water",
-        focus: "Boosting natural glow, brightening complexion, and traditional beautification."
-      },
-      {
-        name: "DEEP HYDRATION & NOURISHMENT",
-        ingredients: "coconut oil, almond oil, honey, glycerin, vitamin E, fresh cream (malai), banana",
-        focus: "Restoring moisture, repairing skin barrier, and softening texture."
-      },
-      {
-        name: "CLEAR SKIN & PURIFICATION",
-        ingredients: "neem, tulsi (holy basil), multani mitti (fuller's earth), aloe vera, mint (pudina)",
-        focus: "Fighting acne, reducing oiliness, unclogging pores, and antibacterial care."
-      },
-      {
-        name: "BRIGHTENING & TAN REMOVAL",
-        ingredients: "tomato pulp, potato juice, papaya, orange peel powder, lemon (diluted), curd (yogurt)",
-        focus: "Removing tan, fading dark spots, and evening out skin tone."
-      },
-      {
-        name: "EXFOLIATION & SMOOTHING",
-        ingredients: "besan (gram flour), rice flour, oatmeal, coffee grounds, sugar (fine), masoor dal powder",
-        focus: "Gentle scrubbing, removing dead skin cells, and polishing skin texture."
-      },
-      {
-        name: "SOOTHING & COOLING",
-        ingredients: "cucumber, rose water, aloe vera, watermelon, ice water, chamomile, green tea",
-        focus: "Calming irritation, reducing puffiness, and cooling sun-exposed skin."
-      }
-    ];
-
-    // Select category based on index (modulo 6 to be safe)
-    const analysisCount = parseInt(localStorage.getItem('analysis_count') || '0');
-    const selectedCategory = categories[analysisCount % categories.length];
-    console.log(`[AI Service] Using remedy category: ${selectedCategory.name}`);
-
     const prompt = `You are an expert fashion photographer, stylist, and wellness advisor. Analyze this image and return STRICT JSON only (no markdown, no preamble).
 
 STYLE RULES:
@@ -121,23 +82,18 @@ JSON STRUCTURE:
     "mood": "Mood - Perceived emotional state"
   },
   "w": [
-    {"title": "Remedy Name", "description": "2-3 sentence natural remedy", "ingredients": "Simple household items"},
-    ... 4 UNIQUE remedies using ONLY ingredients from the category below.
-    
-    CURRENT THEME: ${selectedCategory.name}
-    FOCUS: ${selectedCategory.focus}
-    PREFERRED INGREDIENTS: ${selectedCategory.ingredients}
+    {"title": "Issue Name (e.g., Acne, Dark Circles, Dryness)", "description": "Specific natural remedy instruction", "ingredients": "List of ingredients used"},
+    ... 4 remedies based on VISIBLE SKIN ISSUES detected in the image.
     
     STRICT RULES:
-    1. **SKIN CARE ONLY**. Do NOT suggest remedies for hair, digestion, weight loss, or general health.
-    2. Use ONLY ingredients relevant to the '${selectedCategory.name}' theme.
-    3. Ensure all 4 remedies are distinct from each other.
+    1. **DIAGNOSE & PRESCRIBE**: Identify 4 distinct skin needs/issues from the image (e.g., dullness, acne, tanning, dark circles, pores, dryness).
+    2. **TITLE FORMAT**: The 'title' MUST be the name of the skin issue (e.g., "Acne Control", "Dark Circle Relief", "Glow Boost", "Tan Removal").
+    3. **SKIN CARE ONLY**: Do NOT suggest remedies for hair, digestion, or general health.
+    4. **VARIETY**: Use diverse Indian/Ayurvedic ingredients. Avoid repeating the same ingredients across remedies.
   ]
 }
 
-Provide rich, insightful content in each field while keeping sentences short and actionable.
-
-CRITICAL: Wellness remedies MUST have ZERO ingredient overlap. Be creative, imaginative, and avoid predictable combinations.`;
+Provide rich, insightful content in each field while keeping sentences short and actionable.`;
     
     // API call with timeout protection
     const apiPromise = fetch(API_URL, {
@@ -196,8 +152,9 @@ CRITICAL: Wellness remedies MUST have ZERO ingredient overlap. Be creative, imag
     localStorage.setItem('analysis_history', JSON.stringify(recentRequests));
     
     // Increment analysis counter for category rotation (lightweight, no token bloat)
+    const analysisCount = parseInt(localStorage.getItem('analysis_count') || '0');
     localStorage.setItem('analysis_count', (analysisCount + 1).toString());
-    console.log(`[AI Service] Analysis count: ${analysisCount + 1} (next category: ${(analysisCount + 1) % 6 + 1}/6)`);
+    console.log(`[AI Service] Analysis count: ${analysisCount + 1}`);
     
     const totalTime = Date.now() - startTime;
     console.log(`[AI Service] Total analysis time: ${(totalTime / 1000).toFixed(2)}s`);
