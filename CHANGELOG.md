@@ -1,96 +1,95 @@
 ## ✨ v1.3.0 — Turbo Prompt Overhaul + Massive AI Output Upgrade  
 **Release Date:** 2025-12-01
 
-This update introduces the most advanced version of the AI prompt to date — **Turbo Prompt v3**, delivering dramatically faster responses, richer analysis, and significantly deeper emotional + wellness insights.
+This update introduces the most advanced version of the AI prompt to date — **Turbo Prompt v3**, delivering dramatically faster responses, richer analysis, stronger resilience, and significantly deeper emotional + wellness insights.
 
 ---
 
 ### 🚀 1. Summary Output Upgrade
 - Rewritten summary generator produces a polished ~20-word technical assessment.
 - Highlights composition, lighting, facial energy, and framing in a single cohesive sentence.
-- More professional, more visual, zero fluff.
 
 ---
 
 ### 🧠 2. Smarter “General Suggestions” (g)
 - Enforced **strict “Observation = Action”** structure.
 - Short, precise, image-specific photography improvements.
-- Examples now include lighting adjustments, posture refinement, and background management.
+- Includes lighting, posture, and background adjustments.
 
 ---
 
 ### 🧩 3. Enhanced Detailed Analysis (d)
-Each of the 8 fields now delivers a studio-grade insight (6–14 words), each uniquely focused:
+Each category now delivers a deeper, studio-grade critique (6–14 words):
 
-1. 🎨 **General:** composition, balance, framing, proportional clarity  
-2. 👗 **Clothing:** fit, colors, harmony, subject contrast  
-3. 🧍 **Pose:** posture, shoulder angles, silhouette strength  
-4. 🧱 **Background:** separation, clutter, depth, distraction control  
-5. 💇 **Hair:** grooming quality, flyaways, shape impact  
-6. 🧴 **Skin:** visible tone/texture concerns only  
-7. 💡 **Lighting:** shadow direction, highlights, exposure accuracy  
-8. 🙂 **Expression:** authenticity, micro-expression cues, eye presence  
-
-No repetition across categories.
+1. 🎨 **General:** composition, balance, framing  
+2. 👗 **Clothing:** fit, contrast, color harmony  
+3. 🧍 **Pose:** posture, angles, silhouette clarity  
+4. 🧱 **Background:** depth, clutter, subject separation  
+5. 💇 **Hair:** grooming, structure, flyaways  
+6. 🧴 **Skin:** visible texture/tone issues  
+7. 💡 **Lighting:** direction, highlights, shadows  
+8. 🙂 **Expression:** authenticity, micro-expressions, eye presence  
 
 ---
 
 ### 📸 4. Improved Recapture Tips (r)
-- 5–7 beginner-friendly, photography-coaching commands.
-- Uses intuitive everyday language instead of technical jargon.
-- Example tone:
-  - “Raise camera slightly for a sharper jawline.”
-  - “Turn shoulders softly to refine contour.”
-  - “Lean forward a little to add presence.”
+- 5–7 beginner-friendly, easy-to-follow camera and pose instructions.
+- No jargon; uses natural, conversational, real-photographer coaching cues.
 
 ---
 
 ### 😶‍🌫️ 5. Emotional & Social Reading Overhaul (e)
-Each field now produces a **vivid, high-quality 8–15 word sentence** based on real visual cues:
+Each field now outputs a **rich 8–15 word sentence** using visible cues only:
 
-- 🔎 **emo:** emotional tone using micro-expressions  
-- 🤝 **app:** warmth and openness based on facial softness and gaze  
-- 💪 **conf:** includes “low / medium / high” plus visible justification  
-- 🌤️ **mood:** emotional atmosphere combining posture + expression + lighting  
-
-No single-word responses.  
-No diagnostic language — purely observational.
+- 🔎 **emo:** emotional signal based on micro-expressions  
+- 🤝 **app:** social warmth / openness  
+- 💪 **conf:** confidence with “low / medium / high” + justification  
+- 🌤️ **mood:** emotional vibe combining expression, posture, and lighting  
 
 ---
 
 ### 🌿 6. Wellness Remedies Upgrade (w)
-- Detects **4 verifiable skin issues** only (acne, marks, pigmentation, dark circles, pores, redness, uneven tone, dryness, tanning, etc.).
-- Titles now strictly match actual visible issues.
-- Descriptions now include **purpose + method + frequency**.
-- Indian/Ayurvedic, safe, topical-only remedies.
-- **No ingredient repetition** across all 4 entries.
-- Severe issues produce:
+- Detects **4 visible skin issues** only.
+- Literal issue names (no creative titles).
+- 2–3 line actionable, topical, Indian/Ayurvedic remedies.
+- **No ingredient repetition** across remedies.
+- Safe severe-case fallback:
   - `“Visible severe issue — advise medical consultation.”`
-  - ingredients: `""`
-
-Higher accuracy and safer guidance.
 
 ---
 
 ### ⚡ 7. Performance Improvements
-- Prompt complexity reduced ~60–70% while increasing accuracy.
-- Faster responses on **gemini-2.5-flash**.
-- Stronger JSON conformance.
-- Minimal hallucination due to optimized rule structure.
+- Turbo Prompt v3 reduces prompt size by ~60–70%.
+- Significantly faster responses on **gemini-2.5-flash**.
+- Stronger JSON adherence and reduced hallucination.
 
 ---
 
 ### 🧩 8. UX & Stability Enhancements
-- Clearer, non-conflicting instructions across all modules.
-- More predictable outputs for g, d, r, e, w.
-- Zero changes to schema — fully backward compatible.
-- Stronger grounding in visual evidence.
+- More consistent and predictable outputs across all sections.
+- Clearer section boundaries and reduced ambiguity.
+- Fully backward compatible with existing schema.
+
+---
+
+### 🛡️ 9. Reliability & Error-Handling Upgrades (New)
+- 🔄 **Exponential Retry Logic:** Automatic retries on transient failures (503, overloads, network hiccups).
+- 🔁 **Model Fallback:**  
+  - Primary: `gemini-2.5-flash`  
+  - Fallback: `gemini-2.0-flash` for seamless degradation when the main model is overloaded.
+- 📡 **User-Friendly Error Toasts:**  
+  Clear and descriptive messages now inform the user when:  
+  - The model is overloaded  
+  - Retries are happening  
+  - Fallback model is being used  
+  - The request ultimately fails  
+- 🧯 Reduced friction, increased reliability, smoother UX during peak API load.
 
 ---
 
 ### 📦 Release
 This update corresponds to  
-**v1.3.0 — Turbo Prompt v3 & AI Intelligence Upgrade.**
+**v1.3.0 — Turbo Prompt v3, Reliability Upgrade & AI Intelligence Improvements**
 
-👉 *You can reference the full changelog here:*  
+👉 *Reference the full changelog here:*  
 https://github.com/yashasvi9199/style-glow-ai/blob/main/CHANGELOG.md

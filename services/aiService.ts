@@ -125,23 +125,73 @@ export const analyzeImage = async (
       • Every sentence must be image-grounded, concise, and specific.
     `;
     
-    // API call with timeout protection
-    const apiPromise = fetch(API_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ 
-        image: compressedImage,
-        prompt: prompt
-      }),
-    });
+    // Helper for delay
+    const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
-    const timeoutPromise = new Promise<never>((_, reject) =>
-      setTimeout(() => reject(new Error('API request timeout - please try again')), API_TIMEOUT)
-    );
+    // Retry logic with model fallback
+    const makeRequest = async (modelName: string, attempt: number = 1): Promise<Response> => {
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), API_TIMEOUT);
 
-    const response = await Promise.race([apiPromise, timeoutPromise]);
+        const response = await fetch(API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            image: compressedImage,
+            prompt: prompt,
+            model: modelName // Send model preference to backend
+          }),
+          signal: controller.signal
+        });
+        
+        clearTimeout(timeoutId);
+
+        if (response.status === 503) {
+          throw new Error('503 Service Unavailable');
+        }
+        
+        return response;
+      } catch (error: any) {
+        if (error.name === 'AbortError') {
+          throw new Error('Request timeout');
+        }
+        throw error;
+      }
+    };
+
+    let response;
+    try {
+      // Attempt 1: Primary Model
+      response = await makeRequest('gemini-2.5-flash');
+    } catch (error: any) {
+      if (error.message.includes('503')) {
+        if (onNotification) onNotification('AI busy, retrying in 2s...', 'info');
+        await delay(2000);
+        
+        try {
+          // Attempt 2: Retry Primary
+          response = await makeRequest('gemini-2.5-flash', 2);
+        } catch (error2: any) {
+          if (error2.message.includes('503')) {
+            if (onNotification) onNotification('Still busy, retrying in 4s...', 'info');
+            await delay(4000);
+            
+            try {
+              // Attempt 3: Fallback Model
+              if (onNotification) onNotification('Switching to backup AI model...', 'warning');
+              response = await makeRequest('gemini-2.0-flash', 3);
+            } catch (error3) {
+              throw new Error('AI Service Overloaded. Please try again later.');
+            }
+          } else {
+            throw error2;
+          }
+        }
+      } else {
+        throw error;
+      }
+    }
 
     if (!response.ok) {
       const errorText = await response.text();
@@ -194,64 +244,11 @@ export const analyzeImage = async (
     
     return result;
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Analysis failed:', error);
     
-    if (onNotification) {
-      onNotification(
-        'AI analysis unavailable. Please try again.',
-        'error'
-      );
-    }
-    
-    // Return fallback data
-    return {
-      summary: "AI analysis temporarily unavailable. Please try again.",
-      details: {
-        general: "Unavailable",
-        clothing: "Unavailable",
-        pose: "Unavailable",
-        background: "Unavailable",
-        hair: "Unavailable",
-        skin: "Unavailable",
-        lighting: "Unavailable",
-        expression: "Unavailable"
-      },
-      suggestions: [
-        "Enhance lighting", 
-        "Fix contrast", 
-        "Smooth skin"
-      ],
-      recaptureSuggestions: [
-        "Try finding better lighting",
-        "Smile more naturally",
-        "Check your background for clutter"
-      ],
-      emotionalAnalysis: {
-        expression: "Unavailable",
-        confidence: "Unavailable",
-        approachability: "Unavailable",
-        perceivedMood: "Unavailable"
-      },
-      skinWellness: [
-        {
-          title: "Hydration Boost",
-          description: "Drink more water and use a moisturizer.",
-          ingredients: "Water, Moisturizer"
-        },
-        {
-          title: "Sleep Well",
-          description: "Ensure you get 7-8 hours of sleep.",
-          ingredients: "Sleep"
-        },
-        {
-          title: "Sun Protection",
-          description: "Apply sunscreen daily.",
-          ingredients: "Sunscreen"
-        }
-      ],
-      disclaimerText: "The content provided here is for informational and creative improvement purposes only and is not a substitute for professional medical advice, diagnosis, or treatment."
-    };
+    // Re-throw specific errors to be handled by UI
+    throw new Error(error.message || 'AI analysis failed');
   }
 };
 
