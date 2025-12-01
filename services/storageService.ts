@@ -23,7 +23,8 @@ const getCloudinaryConfig = async (): Promise<CloudinaryConfig | null> => {
   if (cachedConfig) return cachedConfig;
 
   try {
-    const response = await fetch(CONFIG_API_URL);
+    // Prevent browser cache to ensure CORS headers are fresh
+    const response = await fetch(CONFIG_API_URL, { cache: 'no-store' });
     if (!response.ok) throw new Error('Failed to fetch config');
     cachedConfig = await response.json();
     return cachedConfig;
