@@ -8,7 +8,7 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "predeploy": "npm run build",
+    "predeploy": "VITE_GITHUB_PAGES=true npm run build",
     "deploy": "gh-pages -d dist",
     "cap:add": "cap add android",
     "cap:sync": "cap sync",
