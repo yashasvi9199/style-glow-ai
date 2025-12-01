@@ -53,13 +53,22 @@ export const analyzeImage = async (
     const compressedSize = getBase64Size(compressedImage);
     console.log(`[AI Service] Compressed to: ${compressedSize.toFixed(2)} KB (${((1 - compressedSize/originalSize) * 100).toFixed(1)}% reduction)`);
     
+    // Use category rotation instead of tracking all ingredients (prevents token bloat)
+    // Rotate through 6 remedy categories to ensure variety
+    const analysisCount = parseInt(localStorage.getItem('analysis_count') || '0');
+    const categoryIndex = analysisCount % 6; // 0-5 rotation
+    console.log(`[AI Service] Using remedy category ${categoryIndex + 1}/6`);
+    
     // API call with timeout protection
     const apiPromise = fetch(API_URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ image: compressedImage }),
+      body: JSON.stringify({ 
+        image: compressedImage,
+        remedyCategory: categoryIndex // Send only a number, not lists
+      }),
     });
 
     const timeoutPromise = new Promise<never>((_, reject) =>
@@ -105,6 +114,10 @@ export const analyzeImage = async (
     // Update history on success
     recentRequests.push(now);
     localStorage.setItem('analysis_history', JSON.stringify(recentRequests));
+    
+    // Increment analysis counter for category rotation (lightweight, no token bloat)
+    localStorage.setItem('analysis_count', (analysisCount + 1).toString());
+    console.log(`[AI Service] Analysis count: ${analysisCount + 1} (next category: ${(analysisCount + 1) % 6 + 1}/6)`);
     
     const totalTime = Date.now() - startTime;
     console.log(`[AI Service] Total analysis time: ${(totalTime / 1000).toFixed(2)}s`);
