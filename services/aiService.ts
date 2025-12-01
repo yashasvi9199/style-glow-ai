@@ -4,9 +4,13 @@
  */
 
 import { AnalysisResult } from '../types';
+import { compressImage, getBase64Size } from '../utils/imageCompression';
 
 // API Endpoint - Vercel serverless function
 const API_URL = import.meta.env.VITE_API_URL || 'https://style-glow-api.vercel.app/api/analyze';
+
+// API timeout in milliseconds (Gemini can take 20-40s)
+const API_TIMEOUT = 60000; // 60 seconds
 
 /**
  * Callback type for user notifications
@@ -20,6 +24,8 @@ export const analyzeImage = async (
   base64Image: string,
   onNotification?: NotificationCallback
 ): Promise<AnalysisResult> => {
+  const startTime = Date.now();
+  
   // Client-side Rate Limiting (Spam Protection)
   const RATE_LIMIT_WINDOW = 3 * 60 * 1000; // 3 minutes
   const MAX_REQUESTS = 1;
@@ -39,17 +45,28 @@ export const analyzeImage = async (
       throw new Error(`Please wait ${timeStr} before analyzing another image.`);
     }
 
-    // console.log('Calling API:', API_URL);
+    // Compress image before sending to API (reduces payload size & API processing time)
+    const originalSize = getBase64Size(base64Image);
+    console.log(`[AI Service] Original image size: ${originalSize.toFixed(2)} KB`);
     
-    const response = await fetch(API_URL, {
+    const compressedImage = await compressImage(base64Image, 1024, 1024, 0.80);
+    const compressedSize = getBase64Size(compressedImage);
+    console.log(`[AI Service] Compressed to: ${compressedSize.toFixed(2)} KB (${((1 - compressedSize/originalSize) * 100).toFixed(1)}% reduction)`);
+    
+    // API call with timeout protection
+    const apiPromise = fetch(API_URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ image: base64Image }),
+      body: JSON.stringify({ image: compressedImage }),
     });
 
-    // console.log('Response status:', response.status);
+    const timeoutPromise = new Promise<never>((_, reject) =>
+      setTimeout(() => reject(new Error('API request timeout - please try again')), API_TIMEOUT)
+    );
+
+    const response = await Promise.race([apiPromise, timeoutPromise]);
 
     if (!response.ok) {
       const errorText = await response.text();
@@ -88,6 +105,12 @@ export const analyzeImage = async (
     // Update history on success
     recentRequests.push(now);
     localStorage.setItem('analysis_history', JSON.stringify(recentRequests));
+    
+    const totalTime = Date.now() - startTime;
+    console.log(`[AI Service] Total analysis time: ${(totalTime / 1000).toFixed(2)}s`);
+    if (result.tokenUsage) {
+      console.log(`[AI Service] Tokens used: ${result.tokenUsage.totalTokens} (prompt: ${result.tokenUsage.promptTokens}, response: ${result.tokenUsage.responseTokens})`);
+    }
     
     return result;
 
