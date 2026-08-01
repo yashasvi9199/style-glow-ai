@@ -10,6 +10,12 @@ interface GeminiModel {
   supportedGenerationMethods: string[];
 }
 
+interface ModelsApiResponse {
+  status: string;
+  models?: GeminiModel[];
+  error?: string;
+}
+
 interface ModelViewerProps {
   onBack: () => void;
 }
@@ -26,10 +32,10 @@ export const ModelViewer: React.FC<ModelViewerProps> = ({ onBack }) => {
         if (!response.ok) {
           throw new Error('Failed to fetch models from API');
         }
-        const data = await response.json();
+        const data = (await response.json()) as ModelsApiResponse;
         if (data.status === 'success') {
           // Filter to show only generative content models for cleaner display
-          const genModels = (data.models || []).filter((m: any) =>
+          const genModels = (data.models || []).filter((m: GeminiModel) =>
             m.supportedGenerationMethods?.includes('generateContent')
           );
           setModels(genModels);
@@ -82,10 +88,10 @@ export const ModelViewer: React.FC<ModelViewerProps> = ({ onBack }) => {
               const fetchModels = async () => {
                 try {
                   const response = await fetch('/api/models');
-                  const data = await response.json();
+                  const data = (await response.json()) as ModelsApiResponse;
                   if (data.status === 'success') {
                     setModels(data.models || []);
-                  } else throw new Error(data.error);
+                  } else throw new Error(data.error || 'Unknown error');
                 } catch (err: any) {
                   setError(err.message || 'Failed to load models.');
                 } finally {
