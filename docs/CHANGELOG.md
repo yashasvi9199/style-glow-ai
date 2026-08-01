@@ -1,3 +1,13 @@
+## [1.4.3] - 2026-08-01
+
+### Added
+- Created [ModelViewer](file:///home/milanz/Programming/style-glow-ai/src/domains/shared/components/ModelViewer.tsx) component to fetch and display available models using the user's `GEMINI_API_KEY` stored in Cloudflare environment variables.
+- Added a "Gemini Models" button to the top-right header on the main upload page.
+
+### Fixed
+- Cleaned up unnecessary `import.meta.env.VITE_API_URL` fallback checks and directly hardcoded `/api/analyze` and `/api/config` relative routes.
+- Completely removed CORS, Origin, and Referer validation headers/restrictions from backend endpoints since both frontend and backend share the same Cloudflare Pages deployment origin, resolving 403 Forbidden errors.
+
 ## [1.4.2] - 2026-08-01
 
 ### Changed
