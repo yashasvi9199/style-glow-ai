@@ -19,7 +19,7 @@
     "clsx": "^2.1.0",
     "kysely": "^0.29.4",
     "kysely-d1": "^0.4.0",
-    "lucide-react": "^0.344.0",
+    "lucide-react": "^1.28.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "resend": "^6.18.1",
