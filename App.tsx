@@ -224,7 +224,8 @@ export default function App() {
               setAppState(AppState.UPLOAD);
             }}
           />
-        ) : null;
+      case AppState.MODELS:
+        return <ModelViewer onBack={() => setAppState(AppState.UPLOAD)} />;
 
       default:
         return null;
