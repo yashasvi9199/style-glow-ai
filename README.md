@@ -15,14 +15,14 @@ AI-powered image analysis application that provides personalized styling, skin c
 ## 🚀 Live Demo
 
 - **Web App**: [https://yashasvi9199.github.io/style-glow-ai](https://yashasvi9199.github.io/style-glow-ai)
-- **API**: Deployed on Vercel
+- **API**: Deployed on Cloudflare Pages Functions (`/functions/api`)
 
 ## 📋 Prerequisites
 
 - Node.js 18+ and npm
 - Java 21 OpenJDK (for Android builds)
 - Android SDK (for Android builds)
-- Vercel account (for API deployment)
+- Cloudflare account (for Pages and D1)
 - Google Gemini API key
 - Cloudinary account
 
@@ -41,29 +41,20 @@ cd style-glow-ai
 npm install --legacy-peer-deps
 ```
 
-### 3. Setup Backend API (Vercel)
+### 3. Setup Backend API & Database (Cloudflare Pages)
 
-#### Deploy API to Vercel
+1. Create a D1 Database:
+   ```bash
+   npx wrangler d1 create style-glow-db
+   ```
 
-1. Navigate to the API directory:
+2. Initialize D1 Schema:
+   ```bash
+   npx wrangler d1 execute style-glow-db --local --file=docs/DATABASE.sql
+   npx wrangler d1 execute style-glow-db --remote --file=docs/DATABASE.sql
+   ```
 
-```bash
-cd ../style-glow-api
-npm install
-```
-
-2. Deploy to Vercel:
-
-   - Go to [Vercel Dashboard](https://vercel.com/dashboard)
-   - Click "Add New Project"
-   - Import your `style-glow-api` repository
-   - Configure the project
-
-3. **Add Environment Variables in Vercel**:
-
-   - Go to Project Settings → Environment Variables
-   - Add the following variables:
-
+3. Add environment variables in your Cloudflare Pages dashboard project settings under Environment Variables:
    ```
    GEMINI_API_KEY=your_google_gemini_api_key
    CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
@@ -72,39 +63,21 @@ npm install
    LOCALHOST=true
    ```
 
-4. Note your Vercel API URL (e.g., `https://your-project.vercel.app/api/analyze`)
+4. Bind D1 database under Cloudflare Pages project settings -> Functions -> D1 Database bindings as `DB` pointing to `style-glow-db`.
 
 ### 4. Configure Frontend
 
-1. Create `.env.local` in the frontend directory:
-
-```bash
-cd ../style-glow-ai
-```
-
-2. Add your environment variables:
-
-```env
-VITE_API_URL=https://your-vercel-project.vercel.app/api/analyze
-```
-
-**Note**: Cloudinary credentials are fetched from the backend API, not stored in frontend.
-
-### 5. Update API URL
-
-If you forked the repo, update the API URL in:
-
-- `src/services/aiService.ts` (line 4)
-- `src/services/storageService.ts` (line 4)
-
-Replace with your Vercel deployment URL.
+1. Create `.env.local` or `.dev.vars` for local wrangler development:
+   ```env
+   VITE_API_URL=/api/analyze
+   ```
 
 ## 📱 Development
 
-### Run Development Server
+### Run Development Server (Frontend + Functions)
 
 ```bash
-npm run dev
+npm run dev:wrangler
 ```
 
 Visit `http://localhost:5173`
