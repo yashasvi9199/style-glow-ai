@@ -1,4 +1,4 @@
-import { compressImage, getBase64Size } from '../../../utils/imageCompression';
+import { compressImage, getBase64Size } from '../utils/imageCompression';
 
 const CONFIG_API_URL = import.meta.env.VITE_API_URL?.replace('/analyze', '/config') || 'https://style-glow-api.vercel.app/api/config';
 const UPLOAD_TIMEOUT = 30000;
