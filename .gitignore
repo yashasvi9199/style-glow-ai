@@ -5,3 +5,4 @@ dist-ssr
 .DS_Store
 backend_temp
 .wrangler/
+.dev.vars
