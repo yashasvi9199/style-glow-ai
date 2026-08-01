@@ -1,0 +1,15 @@
+# wrangler.json
+# Wrangler configuration file for Cloudflare Pages deployment
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "style-glow-ai",
+  "compatibility_date": "2026-08-01",
+  "pages_build_output_dir": "dist",
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "style-glow-db",
+      "database_id": "your_d1_database_id_here"
+    }
+  ]
+}
