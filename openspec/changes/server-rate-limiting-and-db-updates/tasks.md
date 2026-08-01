@@ -5,10 +5,10 @@
 
 ## 2. API Logging & Configuration Updates
 
-- [ ] 2.1 Update `functions/api/analyze.ts` to expect `imageUrl` in the request body.
-- [ ] 2.2 Update `functions/api/analyze.ts` D1 database logging statement to insert `imageUrl` into the `image_url` column.
-- [ ] 2.3 Fix the user ID mapping in `functions/api/analyze.ts` by hashing the request's IP and User Agent to generate a reliable anonymous `user_id`.
-- [ ] 2.4 Update the default Gemini model configuration inside `functions/api/analyze.ts` to `gemini-3.6-flash`.
+- [x] 2.1 Update `functions/api/analyze.ts` to expect `imageUrl` in the request body.
+- [x] 2.2 Update `functions/api/analyze.ts` D1 database logging statement to insert `imageUrl` into the `image_url` column.
+- [x] 2.3 Fix the user ID mapping in `functions/api/analyze.ts` by hashing the request's IP and User Agent to generate a reliable anonymous `user_id`.
+- [x] 2.4 Update the default Gemini model configuration inside `functions/api/analyze.ts` to `gemini-3.6-flash`.
 
 ## 3. Frontend Service Updates
 
