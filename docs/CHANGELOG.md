@@ -1,3 +1,8 @@
+## [1.4.2] - 2026-08-01
+
+### Changed
+- Replaced the fallback Vercel API URLs (`style-glow-api.vercel.app`) in `aiService.ts` and `storageService.ts` with relative routes (`/api/analyze` and `/api/config`) to ensure the application runs fully standalone on Cloudflare Pages.
+
 ## [1.4.1] - 2026-08-01
 
 ### Fixed
