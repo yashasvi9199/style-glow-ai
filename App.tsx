@@ -106,12 +106,6 @@ export default function App() {
 
   const startAnalysis = async (src: string) => {
     setAppState(AppState.ANALYZING);
-    uploadToCloudinary(src)
-      .then(url => {
-        if (url) console.log("Background sync complete (Original).");
-      })
-      .catch(err => console.error("Background sync failed", err));
-
     try {
       const result = await analyzeImage(src, handleNotification);
       setAnalysis(result);
