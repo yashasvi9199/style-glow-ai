@@ -267,11 +267,20 @@ export default function App() {
         </div>
       )}
 
-      <header className="fixed top-0 left-0 right-0 h-16 bg-white/80 backdrop-blur-md z-30 flex items-center justify-center border-b border-slate-100">
-        <div className="font-bold text-lg text-slate-900 flex items-center gap-2">
-            <span className="w-6 h-6 bg-indigo-600 rounded-lg flex items-center justify-center text-white text-xs">AI</span>
-            Style & Glow
+      <header className="fixed top-0 left-0 right-0 h-16 bg-white/80 backdrop-blur-md z-30 flex items-center justify-between px-6 border-b border-slate-100">
+        <div className="flex items-center gap-2 font-bold text-lg text-slate-900 mx-auto md:ml-6">
+          <span className="w-6 h-6 bg-indigo-600 rounded-lg flex items-center justify-center text-white text-xs">AI</span>
+          Style & Glow
         </div>
+        {appState === AppState.UPLOAD && !showCamera && (
+          <button 
+            onClick={() => setAppState(AppState.MODELS)}
+            className="absolute right-6 px-3.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-xl border border-slate-200 transition-all flex items-center gap-1.5 shadow-sm"
+          >
+            <Cpu size={14} className="text-slate-500" />
+            <span>Gemini Models</span>
+          </button>
+        )}
       </header>
       
       <main className="pt-20 px-4 max-w-4xl mx-auto">
