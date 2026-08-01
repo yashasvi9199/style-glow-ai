@@ -1,7 +1,7 @@
 {
   "name": "style-glow-ai",
   "private": true,
-  "version": "1.4.1",
+  "version": "1.4.2",
   "type": "module",
   "homepage": "https://yashasvi9199.github.io/style-glow-ai",
   "scripts": {
