@@ -1,3 +1,7 @@
+## [1.4.2] - 2026-08-01
+### Standalone Cloudflare Pages API Fallbacks
+- Replaced fallback Vercel API URLs with relative pathways `/api/analyze` and `/api/config` to ensure full independence from external Vercel APIs.
+
 ## [1.4.1] - 2026-08-01
 ### Fix Dependency Conflict with Vite 8
 - Upgraded `@vitejs/plugin-react` to `^6.0.5` to resolve the peer dependency mismatch with `vite@8.2.0`, allowing standard `npm install` without flags.
