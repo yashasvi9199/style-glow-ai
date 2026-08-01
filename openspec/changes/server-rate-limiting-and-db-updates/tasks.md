@@ -12,6 +12,6 @@
 
 ## 3. Frontend Service Updates
 
-- [ ] 3.1 Modify `src/domains/analysis/services/aiService.ts` to await `uploadToCloudinary` first.
-- [ ] 3.2 Update `aiService.ts` to pass the resulting Cloudinary URL as `imageUrl` to `/api/analyze`.
-- [ ] 3.3 Update the frontend fallback model configuration in `aiService.ts` to request `gemini-3.6-flash`.
+- [x] 3.1 Modify `src/domains/analysis/services/aiService.ts` to await `uploadToCloudinary` first.
+- [x] 3.2 Update `aiService.ts` to pass the resulting Cloudinary URL as `imageUrl` to `/api/analyze`.
+- [x] 3.3 Update the frontend fallback model configuration in `aiService.ts` to request `gemini-3.6-flash`.
