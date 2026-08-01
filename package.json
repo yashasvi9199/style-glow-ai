@@ -10,19 +10,9 @@
     "build": "node_modules/typescript/bin/tsc && node_modules/vite/bin/vite.js build",
     "preview": "vite preview",
     "predeploy": "VITE_GITHUB_PAGES=true npm run build",
-    "deploy": "gh-pages -d dist",
-    "cap:add": "cap add android",
-    "cap:sync": "cap sync",
-    "cap:open": "cap open android",
-    "android": "npm run build && npx cap sync && cd android && ./gradlew assembleRelease --info",
-    "android-debug": "npm run build && npx cap sync && cd android && ./gradlew assembleDebug --info",
-    "adb-install": "adb devices && cd android/app/build/outputs/apk/release/ && adb install app-release.apk",
-    "adb-install-debug": "adb devices && cd android/app/build/outputs/apk/debug/ && adb install app-debug.apk"
+    "deploy": "gh-pages -d dist"
   },
   "dependencies": {
-    "@capacitor/android": "^6.0.0",
-    "@capacitor/camera": "^7.0.2",
-    "@capacitor/core": "^6.0.0",
     "@google/genai": "^1.30.0",
     "@google/generative-ai": "^0.24.1",
     "better-auth": "^1.6.25",
@@ -36,7 +26,6 @@
     "tailwind-merge": "^2.2.1"
   },
   "devDependencies": {
-    "@capacitor/cli": "^6.0.0",
     "@types/node": "^20.0.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
