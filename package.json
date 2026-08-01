@@ -24,6 +24,7 @@
     "@capacitor/camera": "^7.0.2",
     "@capacitor/core": "^6.0.0",
     "@google/genai": "^1.30.0",
+    "@google/generative-ai": "^0.24.1",
     "clsx": "^2.1.0",
     "lucide-react": "^0.344.0",
     "react": "^19.0.0",
