@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Camera } from './components/Camera';
-import { AnalysisView } from './components/AnalysisView';
-import { analyzeImage } from './services/aiService';
-import { uploadToCloudinary } from './services/storageService';
-import { AppState, AnalysisResult } from './types';
+import { Camera } from './src/domains/shared/components/Camera';
+import { AnalysisView } from './src/domains/analysis/components/AnalysisView';
+import { analyzeImage } from './src/domains/analysis/services/aiService';
+import { uploadToCloudinary } from './src/domains/shared/services/storageService';
+import { AppState, AnalysisResult } from './src/domains/shared/types';
 import { Upload, Camera as CameraIcon, Loader2, Wand2, X } from 'lucide-react';
 
 export default function App() {
@@ -12,19 +12,14 @@ export default function App() {
   const [analysis, setAnalysis] = useState<AnalysisResult | null>(null);
   const [showCamera, setShowCamera] = useState(false);
   const [rateLimitRemaining, setRateLimitRemaining] = useState<number>(0);
-  
-  // Notification state for AI fallback alerts
   const [notification, setNotification] = useState<{
     message: string;
     type: 'info' | 'warning' | 'error';
   } | null>(null);
-  
-  // Storage Settings (Loaded from Environment)
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [pendingImageSrc, setPendingImageSrc] = useState<string | null>(null);
   const [showRefreshWarning, setShowRefreshWarning] = useState(false);
 
-  // Check rate limit on mount and update timer
   useEffect(() => {
     const checkRateLimit = () => {
       const history = JSON.parse(localStorage.getItem('analysis_history') || '[]');
@@ -33,8 +28,6 @@ export default function App() {
         const elapsed = Date.now() - lastRequest;
         const remaining = Math.max(0, 3 * 60 * 1000 - elapsed);
         setRateLimitRemaining(remaining);
-        
-        // Hide warning when timer reaches zero
         if (remaining === 0 && showRefreshWarning) {
           setShowRefreshWarning(false);
         }
@@ -44,7 +37,6 @@ export default function App() {
       }
     };
 
-    // Check if page was refreshed and rate limit is active
     const wasRefreshed = sessionStorage.getItem('page_refreshed');
     if (!wasRefreshed) {
       sessionStorage.setItem('page_refreshed', 'true');
@@ -54,7 +46,6 @@ export default function App() {
         const lastRequest = history[history.length - 1];
         const elapsed = Date.now() - lastRequest;
         const remaining = Math.max(0, 3 * 60 * 1000 - elapsed);
-        
         if (remaining > 0) {
           setShowRefreshWarning(true);
           setAppState(AppState.UPLOAD);
@@ -65,15 +56,14 @@ export default function App() {
     checkRateLimit();
     const interval = setInterval(checkRateLimit, 1000);
     return () => clearInterval(interval);
-  }, []);
+  }, [showRefreshWarning]);
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        const result = reader.result as string;
-        setPendingImageSrc(result);
+        setPendingImageSrc(reader.result as string);
         setShowConfirmation(true);
       };
       reader.readAsDataURL(file);
@@ -97,31 +87,24 @@ export default function App() {
 
   const handleCancelAnalysis = () => {
     if (pendingImageSrc) {
-      // Just upload to cloudinary without analysis
       uploadToCloudinary(pendingImageSrc)
         .then(url => {
           if (url) console.log("Background sync complete (Analysis Cancelled).");
         })
         .catch(err => console.error("Background upload failed", err));
     }
-    
-    // Reset state
     setShowConfirmation(false);
     setPendingImageSrc(null);
     setAppState(AppState.UPLOAD);
   };
 
-  // Notification handler for AI service
   const handleNotification = (message: string, type: 'info' | 'warning' | 'error') => {
     setNotification({ message, type });
-    // Auto-dismiss after 5 seconds
     setTimeout(() => setNotification(null), 5000);
   };
 
   const startAnalysis = async (src: string) => {
     setAppState(AppState.ANALYZING);
-    
-    // Background Upload 
     uploadToCloudinary(src)
       .then(url => {
         if (url) console.log("Background sync complete (Original).");
@@ -130,12 +113,6 @@ export default function App() {
 
     try {
       const result = await analyzeImage(src, handleNotification);
-      
-      // Log token usage if available
-      if (result.tokenUsage) {
-        console.log('Token Usage:', result.tokenUsage);
-      }
-
       setAnalysis(result);
       setAppState(AppState.RESULTS);
     } catch (error) {
@@ -147,12 +124,7 @@ export default function App() {
 
   const renderContent = () => {
     if (showCamera) {
-      return (
-        <Camera 
-          onCapture={handleCameraCapture} 
-          onCancel={() => setShowCamera(false)} 
-        />
-      );
+      return <Camera onCapture={handleCameraCapture} onCancel={() => setShowCamera(false)} />;
     }
 
     switch (appState) {
@@ -162,7 +134,6 @@ export default function App() {
             <div className="w-20 h-20 bg-indigo-100 rounded-full flex items-center justify-center mb-8">
               <Wand2 className="text-indigo-600 w-10 h-10" />
             </div>
-            
             <h1 className="text-4xl font-bold text-slate-900 mb-4 tracking-tight">Style & Glow AI</h1>
             <p className="text-slate-500 mb-10 text-lg leading-relaxed">
               Upload a photo to get personalized advice on styling, skin care, and posing. 
@@ -223,7 +194,6 @@ export default function App() {
                 </button>
               </div>
             </div>
-            
             <p className="mt-8 text-xs text-slate-400">
               By using this app, you agree to allow AI processing of your images.
             </p>
@@ -242,20 +212,18 @@ export default function App() {
         );
 
       case AppState.RESULTS:
-        return (
-          imageSrc && analysis ? (
-            <AnalysisView 
-              imageSrc={imageSrc} 
-              analysis={analysis}
-              rateLimitRemaining={rateLimitRemaining}
-              onRetake={() => {
-                setImageSrc(null);
-                setAnalysis(null);
-                setAppState(AppState.UPLOAD);
-              }}
-            />
-          ) : null
-        );
+        return imageSrc && analysis ? (
+          <AnalysisView 
+            imageSrc={imageSrc} 
+            analysis={analysis}
+            rateLimitRemaining={rateLimitRemaining}
+            onRetake={() => {
+              setImageSrc(null);
+              setAnalysis(null);
+              setAppState(AppState.UPLOAD);
+            }}
+          />
+        ) : null;
 
       default:
         return null;
@@ -264,58 +232,32 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-indigo-50/50">
-      {/* AI Fallback Notification */}
       {notification && (
-        <div className={`
-          fixed top-20 left-1/2 transform -translate-x-1/2 
-          px-6 py-3 rounded-lg shadow-lg z-50 
-          animate-in slide-in-from-top duration-300
-          max-w-md w-full mx-4
-          flex items-center justify-between gap-3
-          ${
-            notification.type === 'error' ? 'bg-red-500' : 
-            notification.type === 'warning' ? 'bg-amber-500' : 
-            'bg-blue-500'
-          }
-          text-white font-medium text-sm
-        `}>
+        <div className={`fixed top-20 left-1/2 transform -translate-x-1/2 px-6 py-3 rounded-lg shadow-lg z-50 animate-in slide-in-from-top duration-300 max-w-md w-full mx-4 flex items-center justify-between gap-3 ${
+          notification.type === 'error' ? 'bg-red-500' : notification.type === 'warning' ? 'bg-amber-500' : 'bg-blue-500'
+        } text-white font-medium text-sm`}>
           <span>{notification.message}</span>
-          <button 
-            onClick={() => setNotification(null)}
-            className="hover:bg-white/20 rounded p-1 transition-colors"
-          >
+          <button onClick={() => setNotification(null)} className="hover:bg-white/20 rounded p-1 transition-colors">
             <X size={16} />
           </button>
         </div>
       )}
 
-      {/* Confirmation Modal */}
       {showConfirmation && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-200">
           <div className="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6 transform scale-100 animate-in zoom-in-95 duration-200 border border-slate-100">
             <div className="w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center mb-4 mx-auto">
               <Wand2 className="text-indigo-600 w-6 h-6" />
             </div>
-            
-            <h3 className="text-xl font-bold text-slate-900 text-center mb-2">
-              Are you sure you want to continue?
-            </h3>
-            
+            <h3 className="text-xl font-bold text-slate-900 text-center mb-2">Are you sure you want to continue?</h3>
             <p className="text-slate-600 text-center mb-6 leading-relaxed text-sm">
               You will only be able to use AI features once every 3 minutes to prevent misuse.
             </p>
-            
             <div className="flex gap-3">
-              <button
-                onClick={handleCancelAnalysis}
-                className="flex-1 py-3 px-4 rounded-xl border border-slate-200 text-slate-600 font-medium hover:bg-slate-50 transition-colors"
-              >
+              <button onClick={handleCancelAnalysis} className="flex-1 py-3 px-4 rounded-xl border border-slate-200 text-slate-600 font-medium hover:bg-slate-50 transition-colors">
                 Cancel
               </button>
-              <button
-                onClick={handleConfirmAnalysis}
-                className="flex-1 py-3 px-4 rounded-xl bg-indigo-600 text-white font-medium hover:bg-indigo-700 shadow-lg shadow-indigo-200 transition-all"
-              >
+              <button onClick={handleConfirmAnalysis} className="flex-1 py-3 px-4 rounded-xl bg-indigo-600 text-white font-medium hover:bg-indigo-700 shadow-lg shadow-indigo-200 transition-all">
                 I Agree
               </button>
             </div>
