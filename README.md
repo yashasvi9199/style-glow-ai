@@ -31,7 +31,7 @@ AI-powered image analysis application that provides personalized styling, skin c
 ### 1. Fork & Clone the Repository
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/style-glow-ai.git
+git clone https://github.com/yashasvi9199/style-glow-ai.git
 cd style-glow-ai
 ```
 
@@ -59,7 +59,7 @@ npm install --legacy-peer-deps
    GEMINI_API_KEY=your_google_gemini_api_key
    CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
    CLOUDINARY_UPLOAD_PRESET=your_cloudinary_upload_preset
-   PRIMARY_DOMAIN=yashasvi9199.github.io
+   PRIMARY_DOMAIN=your_primary_domain
    LOCALHOST=true
    ```
 
@@ -123,6 +123,12 @@ This will:
 ```bash
 keytool -genkey -v -keystore my-release-key.jks -keyalg RSA -keysize 2048 -validity 10000 -alias YOUR_ALIAS
 ```
+
+Follow the prompts to enter:
+
+- Keystore password
+- Key password
+- Your name, organization, etc.
 
 ### Configure Keystore
 
