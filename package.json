@@ -6,8 +6,8 @@
   "homepage": "https://yashasvi9199.github.io/style-glow-ai",
   "scripts": {
     "dev": "vite",
-    "dev:wrangler": "wrangler pages dev --compatibility-date=2026-08-01 public",
-    "build": "tsc && vite build",
+    "dev:wrangler": "npm run build && wrangler pages dev --compatibility-date=2026-08-01 dist",
+    "build": "node_modules/typescript/bin/tsc && node_modules/vite/bin/vite.js build",
     "preview": "vite preview",
     "predeploy": "VITE_GITHUB_PAGES=true npm run build",
     "deploy": "gh-pages -d dist",

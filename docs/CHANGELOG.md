@@ -6,3 +6,5 @@
 - Added optional database logging utilizing Cloudflare D1 SQLite database.
 - Added Cloudflare D1 SQL schema configuration in `docs/DATABASE.sql`.
 - Added Wrangler CLI to project's devDependencies to ease local development and testing of Pages Functions.
+
+
