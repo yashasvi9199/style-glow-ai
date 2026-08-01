@@ -1,5 +1,3 @@
-# wrangler.json
-# Wrangler configuration file for Cloudflare Pages deployment
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "style-glow-ai",
@@ -9,7 +7,7 @@
     {
       "binding": "DB",
       "database_name": "style-glow-db",
-      "database_id": "your_d1_database_id_here"
+      "database_id": "7f91cd4b-f522-4a90-96f5-4209ff321c9d"
     }
   ]
 }
