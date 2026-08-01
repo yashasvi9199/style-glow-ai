@@ -6,6 +6,7 @@
   "homepage": "https://yashasvi9199.github.io/style-glow-ai",
   "scripts": {
     "dev": "vite",
+    "dev:wrangler": "wrangler pages dev --compatibility-date=2026-08-01 public",
     "build": "tsc && vite build",
     "preview": "vite preview",
     "predeploy": "VITE_GITHUB_PAGES=true npm run build",
@@ -40,6 +41,7 @@
     "postcss": "^8.4.35",
     "tailwindcss": "^3.4.1",
     "typescript": "^5.2.2",
-    "vite": "^5.1.4"
+    "vite": "^5.1.4",
+    "wrangler": "^3.60.0"
   }
 }
