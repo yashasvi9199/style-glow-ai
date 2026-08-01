@@ -1,3 +1,16 @@
+## [1.5.0] - 2026-08-01
+
+### Added
+- Implemented Cloudflare Pages Functions server-side rate limiting middleware at `functions/api/_middleware.ts` restricting POST requests per IP to `/api/analyze` using the `rate_limits` D1 database table.
+- Added database image URL logging to save the uploaded Cloudinary URL in the `image_url` column in the `analysis_logs` table.
+
+### Changed
+- Configured default model configuration in frontend and backend to use `gemini-3.6-flash`.
+- Updated client-side image analyze service flow to await the Cloudinary upload sequentially and pass the resulting URL as `imageUrl` to the backend.
+
+### Fixed
+- Resolved the incorrect user ID mapping that originally saved the confidence enum value in `user_id` instead of a unique anonymous ID hash.
+
 ## [1.4.3] - 2026-08-01
 
 ### Added
