@@ -1,3 +1,8 @@
+## [1.4.1] - 2026-08-01
+
+### Fixed
+- Upgraded `@vitejs/plugin-react` to `^6.0.5` to resolve a peer dependency conflict with `vite@8.2.0`, allowing standard `npm install` to succeed without flags.
+
 ## [1.4.0] - 2026-08-01
 
 ### Added
