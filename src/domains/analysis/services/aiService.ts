@@ -1,7 +1,7 @@
 import { AnalysisResult } from '../../shared/types';
 import { compressImage, getBase64Size } from '../../shared/utils/imageCompression';
 
-const API_URL = import.meta.env.VITE_API_URL || 'https://style-glow-api.vercel.app/api/analyze';
+const API_URL = import.meta.env.VITE_API_URL || '/api/analyze';
 const API_TIMEOUT = 60000;
 
 export type NotificationCallback = (message: string, type: 'info' | 'warning' | 'error') => void;
