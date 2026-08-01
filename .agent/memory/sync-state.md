@@ -1,5 +1,6 @@
 # Sync State
 
 ## 2026-08-01
-- **Core Changes**: Initialized OpenSpec explore mode. D1 migrations applied to local/remote.
-- **Next Objectives**: Explore user ideas/problems in explore mode.
+- **Core Changes**: Proposed new change `server-rate-limiting-and-db-updates` with complete artifacts (proposal, specs, design, tasks).
+- **Next Objectives**: Wait for user approval, then run /opsx-apply to implement.
+
