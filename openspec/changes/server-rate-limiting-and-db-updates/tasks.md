@@ -1,7 +1,7 @@
 ## 1. Rate Limiting Middleware
 
-- [ ] 1.1 Create middleware at `functions/api/_middleware.ts` to implement rate limiting logic using Cloudflare D1 `rate_limits` table.
-- [ ] 1.2 Implement IP checking and incrementing logic in the middleware with a 3-minute rate limit window and a max of 1 request.
+- [x] 1.1 Create middleware at `functions/api/_middleware.ts` to implement rate limiting logic using Cloudflare D1 `rate_limits` table.
+- [x] 1.2 Implement IP checking and incrementing logic in the middleware with a 3-minute rate limit window and a max of 1 request.
 
 ## 2. API Logging & Configuration Updates
 
