@@ -6,3 +6,4 @@ dist-ssr
 backend_temp
 .wrangler/
 .dev.vars
+openspec/
