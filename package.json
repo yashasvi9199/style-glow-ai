@@ -25,10 +25,14 @@
     "@capacitor/core": "^6.0.0",
     "@google/genai": "^1.30.0",
     "@google/generative-ai": "^0.24.1",
+    "better-auth": "^1.6.25",
     "clsx": "^2.1.0",
+    "kysely": "^0.29.4",
+    "kysely-d1": "^0.4.0",
     "lucide-react": "^0.344.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "resend": "^6.18.1",
     "tailwind-merge": "^2.2.1"
   },
   "devDependencies": {
