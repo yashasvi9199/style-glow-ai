@@ -20,7 +20,12 @@ export const onRequest: PagesFunction<Env> = async (context) => {
     return new Response(null, { status: 200, headers });
   }
 
-  const isAllowed = (allowLocalhost && isLocalhost) || (allowedDomain && origin.includes(allowedDomain));
+  const url = new URL(request.url);
+  const isAllowed = 
+    (allowLocalhost && isLocalhost) || 
+    (allowedDomain && origin.includes(allowedDomain)) || 
+    (origin && origin.includes(url.host)) ||
+    (!origin);
 
   if (!isAllowed) {
     return new Response(
