@@ -13,7 +13,7 @@ export const onRequest: PagesFunction<Env> = async (context) => {
 
   try {
     const requestBody: any = await request.json();
-    const { image, prompt, model: modelName } = requestBody;
+    const { image, prompt, model: modelName, imageUrl } = requestBody;
 
     if (!image) {
       return new Response(JSON.stringify({ error: 'Image data is required' }), { status: 400, headers });
@@ -107,15 +107,21 @@ export const onRequest: PagesFunction<Env> = async (context) => {
     if (env.DB) {
       try {
         const id = crypto.randomUUID();
-        const userId = parsedResult.e?.conf || 'unknown';
-        const modelUsed = modelName || 'gemini-2.5-flash';
+        const ip = request.headers.get('cf-connecting-ip') || 'unknown';
+        const userAgent = request.headers.get('user-agent') || 'unknown';
+        const msgBuffer = new TextEncoder().encode(ip + userAgent);
+        const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        const userId = hashArray.map(b => b.toString(16).padStart(2, '0')).join('').substring(0, 16);
+
+        const modelUsed = modelName || 'gemini-3.6-flash';
         const promptTokens = result.usageMetadata?.promptTokenCount || 0;
         const completionTokens = result.usageMetadata?.candidatesTokenCount || 0;
         const totalTokens = result.usageMetadata?.totalTokenCount || 0;
 
         await env.DB.prepare(
-          'INSERT INTO analysis_logs (id, user_id, model_used, prompt_tokens, completion_tokens, total_tokens) VALUES (?, ?, ?, ?, ?, ?)'
-        ).bind(id, userId, modelUsed, promptTokens, completionTokens, totalTokens).run();
+          'INSERT INTO analysis_logs (id, user_id, image_url, model_used, prompt_tokens, completion_tokens, total_tokens) VALUES (?, ?, ?, ?, ?, ?, ?)'
+        ).bind(id, userId, imageUrl || null, modelUsed, promptTokens, completionTokens, totalTokens).run();
       } catch (dbError) {
         console.error('Database logging failed:', dbError);
       }
