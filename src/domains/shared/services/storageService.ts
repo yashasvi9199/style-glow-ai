@@ -92,7 +92,10 @@ export const uploadToCloudinary = async (base64Image: string): Promise<string | 
       return null;
     }
 
-    const data = await response.json();
+    interface CloudinaryUploadResponse {
+      secure_url: string;
+    }
+    const data = (await response.json()) as CloudinaryUploadResponse;
     return data.secure_url;
   } catch (error) {
     console.error(`Upload failed:`, error);
