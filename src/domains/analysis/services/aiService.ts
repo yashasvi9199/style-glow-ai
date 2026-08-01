@@ -1,5 +1,6 @@
 import { AnalysisResult } from '../../shared/types';
 import { compressImage, getBase64Size } from '../../shared/utils/imageCompression';
+import { uploadToCloudinary } from '../../shared/services/storageService';
 
 const API_URL = '/api/analyze';
 const API_TIMEOUT = 60000;
@@ -8,7 +9,7 @@ export type NotificationCallback = (message: string, type: 'info' | 'warning' | 
 
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
-const makeRequest = async (compressedImage: string, prompt: string, modelName: string): Promise<Response> => {
+const makeRequest = async (compressedImage: string, prompt: string, modelName: string, imageUrl?: string | null): Promise<Response> => {
   try {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), API_TIMEOUT);
@@ -19,7 +20,8 @@ const makeRequest = async (compressedImage: string, prompt: string, modelName: s
       body: JSON.stringify({ 
         image: compressedImage,
         prompt: prompt,
-        model: modelName
+        model: modelName,
+        imageUrl: imageUrl || null
       }),
       signal: controller.signal
     });
@@ -81,22 +83,30 @@ export const analyzeImage = async (
       }
       Check GUIDE/changelogs for formatting rules.`;
 
+    if (onNotification) onNotification('Uploading image to Cloudinary...', 'info');
+    let imageUrl: string | null = null;
+    try {
+      imageUrl = await uploadToCloudinary(base64Image);
+    } catch (uploadErr) {
+      console.error('Cloudinary upload failed, proceeding with base64 only:', uploadErr);
+    }
+
     let response;
     try {
-      response = await makeRequest(compressedImage, prompt, 'gemini-2.5-flash');
+      response = await makeRequest(compressedImage, prompt, 'gemini-3.6-flash', imageUrl);
     } catch (error: any) {
       if (error.message.includes('503')) {
         if (onNotification) onNotification('AI busy, retrying in 2s...', 'info');
         await delay(2000);
         try {
-          response = await makeRequest(compressedImage, prompt, 'gemini-2.5-flash');
+          response = await makeRequest(compressedImage, prompt, 'gemini-3.6-flash', imageUrl);
         } catch (error2: any) {
           if (error2.message.includes('503')) {
             if (onNotification) onNotification('Still busy, retrying in 4s...', 'info');
             await delay(4000);
             try {
               if (onNotification) onNotification('Switching to backup AI model...', 'warning');
-              response = await makeRequest(compressedImage, prompt, 'gemini-2.0-flash');
+              response = await makeRequest(compressedImage, prompt, 'gemini-2.0-flash', imageUrl);
             } catch (error3) {
               throw new Error('AI Service Overloaded. Please try again later.');
             }
