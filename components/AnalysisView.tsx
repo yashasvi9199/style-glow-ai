@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { AnalysisResult, DetailedAnalysis } from '../types';
-import { Sparkles, Shirt, Heart, Layout, ScanFace, Sun, Smile, Camera, Leaf, Baby } from 'lucide-react';
+import { Sparkles, Shirt, Heart, LayoutDashboard, ScanFace, Sun, Smile, Camera, Leaf, Baby } from 'lucide-react';
 
 interface AnalysisViewProps {
   imageSrc: string;
@@ -18,7 +18,7 @@ export const AnalysisView: React.FC<AnalysisViewProps> = ({ imageSrc, analysis, 
     { key: 'general', label: 'General', icon: Sparkles, color: 'text-slate-900', bg: 'bg-slate-50' },
     { key: 'clothing', label: 'Clothing', icon: Shirt, color: 'text-slate-900', bg: 'bg-white' },
     { key: 'pose', label: 'Pose', icon: Heart, color: 'text-slate-900', bg: 'bg-slate-50' },
-    { key: 'background', label: 'Background', icon: Layout, color: 'text-slate-900', bg: 'bg-white' },
+    { key: 'background', label: 'Background', icon: LayoutDashboard, color: 'text-slate-900', bg: 'bg-white' },
     { key: 'hair', label: 'Hair', icon: Baby, color: 'text-slate-900', bg: 'bg-slate-50' },
     { key: 'skin', label: 'Skin', icon: ScanFace, color: 'text-slate-900', bg: 'bg-white'},
     { key: 'lighting', label: 'Lighting', icon: Sun, color: 'text-slate-900', bg: 'bg-slate-50' },
