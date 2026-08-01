@@ -63,7 +63,7 @@ export const onRequest: PagesFunction<Env> = async (context) => {
               properties: {
                 emo: { type: SchemaType.STRING },
                 app: { type: SchemaType.STRING },
-                conf: { type: SchemaType.STRING, enum: ["low", "medium", "high"] },
+                conf: { type: SchemaType.STRING, format: "enum", enum: ["low", "medium", "high"] },
                 mood: { type: SchemaType.STRING }
               },
               required: ["emo", "app", "conf", "mood"]
