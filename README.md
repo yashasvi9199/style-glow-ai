@@ -22,7 +22,7 @@ AI-powered image analysis application that provides personalized styling, skin c
 - Node.js 18+ and npm
 - Java 21 OpenJDK (for Android builds)
 - Android SDK (for Android builds)
-- Cloudflare account (for Pages and D1)
+- Cloudflare Account (for Pages and D1)
 - Google Gemini API key
 - Cloudinary account
 
@@ -124,12 +124,6 @@ This will:
 keytool -genkey -v -keystore my-release-key.jks -keyalg RSA -keysize 2048 -validity 10000 -alias YOUR_ALIAS
 ```
 
-Follow the prompts to enter:
-
-- Keystore password
-- Key password
-- Your name, organization, etc.
-
 ### Configure Keystore
 
 Create `android/keystore.properties`:
@@ -170,48 +164,46 @@ adb devices
 adb logcat -v threadtime > device-logs.txt
 # Or filter by your app packageID
 adb logcat --pid=$(adb shell pidof -s com.styleandglow.ai) -v threadtime > app-logs.txt
-
 ```
 
 ## 🔧 Available Scripts
 
 ### Frontend (`style-glow-ai`)
 
-- `npm run dev` - Start development server
-- `npm run build` - Build for production
+- `npm run dev` - Start Vite development server
+- `npm run dev:wrangler` - Start Wrangler local emulation with functions
+- `npm run build` - Compile TypeScript and Vite production bundle
 - `npm run preview` - Preview production build
 - `npm run deploy` - Deploy to GitHub Pages
 - `npm run android` - Build Android APK
 - `npm run cap:sync` - Sync Capacitor
-- `npm run cap:open` - Open Android Studio
-
-### Backend (`style-glow-api`)
-
-- `npm run build` - Compile TypeScript
 
 ## 🏗️ Project Structure
 
 ```
 style-glow-ai/
-├── components/          # React components
-│   ├── AnalysisView.tsx
-│   └── Camera.tsx
-├── services/           # API services
-│   ├── aiService.ts
-│   └── storageService.ts
-├── android/            # Capacitor Android project
-├── dist/              # Production build
-└── public/            # Static assets
-
-style-glow-api/
-└── api/
-    ├── analyze.ts     # Main AI analysis endpoint
-    └── config.ts      # Cloudinary config endpoint
+├── src/
+│   └── domains/            # Feature and shared boundaries
+│       ├── analysis/       # Core AI analysis feature
+│       │   ├── components/
+│       │   ├── services/
+│       │   └── types/
+│       └── shared/         # Generic utilities and widgets
+│           ├── components/
+│           ├── services/
+│           ├── types/
+│           └── utils/
+├── functions/              # Cloudflare Pages Functions
+│   └── api/                # API handlers (analyze, config, models)
+├── docs/                   # Documentation files (GUIDE.md, DATABASE.sql)
+├── android/                # Capacitor Android project
+├── dist/                   # Production build
+└── public/                 # Static assets
 ```
 
 ## 🔑 Environment Variables
 
-### Backend (Vercel Project Settings)
+### Cloudflare Pages Settings
 
 | Variable                   | Description                                          |
 | -------------------------- | ---------------------------------------------------- |
@@ -221,11 +213,11 @@ style-glow-api/
 | `PRIMARY_DOMAIN`           | Your primary domain (e.g., `yashasvi9199.github.io`) |
 | `LOCALHOST`                | Set to `true` to allow localhost access              |
 
-### Frontend (`.env.local`)
+### Local Dev Settings (`.env.local` / `.dev.vars`)
 
 | Variable       | Description                  |
 | -------------- | ---------------------------- |
-| `VITE_API_URL` | Your Vercel API endpoint URL |
+| `VITE_API_URL` | Cloudflare Pages endpoint URL (e.g., `/api/analyze`) |
 
 ## 🎨 Tech Stack
 
@@ -240,7 +232,8 @@ style-glow-api/
 
 ### Backend
 
-- Vercel Serverless Functions
+- Cloudflare Pages Functions
+- Cloudflare D1 Database (SQLite)
 - Google Generative AI (Gemini)
 - Cloudinary (image storage)
 
