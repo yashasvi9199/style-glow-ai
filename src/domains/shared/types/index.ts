@@ -1,7 +1,8 @@
 export enum AppState {
   UPLOAD = 'UPLOAD',
   ANALYZING = 'ANALYZING',
-  RESULTS = 'RESULTS'
+  RESULTS = 'RESULTS',
+  MODELS = 'MODELS'
 }
 
 export interface DetailedAnalysis {
