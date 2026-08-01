@@ -4,7 +4,8 @@ import { AnalysisView } from './src/domains/analysis/components/AnalysisView';
 import { analyzeImage } from './src/domains/analysis/services/aiService';
 import { uploadToCloudinary } from './src/domains/shared/services/storageService';
 import { AppState, AnalysisResult } from './src/domains/shared/types';
-import { Upload, Camera as CameraIcon, Loader2, Wand2, X } from 'lucide-react';
+import { Upload, Camera as CameraIcon, Loader2, Wand2, X, Cpu } from 'lucide-react';
+import { ModelViewer } from './src/domains/shared/components/ModelViewer';
 
 export default function App() {
   const [appState, setAppState] = useState<AppState>(AppState.UPLOAD);
