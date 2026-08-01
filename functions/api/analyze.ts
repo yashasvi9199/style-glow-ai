@@ -27,7 +27,7 @@ export const onRequest: PagesFunction<Env> = async (context) => {
     const genAI = new GoogleGenerativeAI(env.GEMINI_API_KEY || '');
     
     const model = genAI.getGenerativeModel({ 
-      model: modelName || 'gemini-2.5-flash',
+      model: modelName || 'gemini-3.6-flash',
       generationConfig: {
         temperature: 1.0,
         topP: 0.95,
